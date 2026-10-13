@@ -1,4 +1,4 @@
-"""Run the analytic NL2SOL probe with recording on/off and with an I/O failure.
+"""Check opt-in recording and identical NL2SOL results, including I/O failure.
 
 Usage: python check_probe.py path/to/optimization_steps_probe.exe output_parent
 Only creates a new temporary directory within output_parent; never edits inputs.
@@ -26,12 +26,17 @@ def main():
     parent = Path(sys.argv[2]).resolve()
     parent.mkdir(parents=True, exist_ok=True)
     root = Path(tempfile.mkdtemp(prefix="probe_", dir=parent))
-    for mode in ("off", "on", "failure"):
+    modes = {"default": None, "off": "0", "empty": "", "invalid": "yes",
+             "on": "1", "failure": "1"}
+    for mode, value in modes.items():
         run = root / mode
         run.mkdir()
         if mode == "failure":
             (run / "optimization_steps").write_text("block directory creation")
-        env = dict(os.environ, ODFR_OPTIMIZATION_STEPS="0" if mode == "off" else "1")
+        env = dict(os.environ)
+        env.pop("ODFR_OPTIMIZATION_STEPS", None)
+        if value is not None:
+            env["ODFR_OPTIMIZATION_STEPS"] = value
         result = subprocess.run([exe], cwd=run, env=env, capture_output=True, text=True, check=True)
         (run / "stdout.log").write_text(result.stdout)
         if mode == "on":
@@ -40,9 +45,10 @@ def main():
             assert "disabled" in result.stdout, result.stdout
     for name in ("evaluations.dat", "solution.dat"):
         expected = (root / "off" / name).read_bytes()
-        for mode in ("on", "failure"):
+        for mode in modes:
             assert (root / mode / name).read_bytes() == expected, (mode, name)
-    assert not (root / "off" / "optimization_steps").exists()
+    for mode in ("default", "off", "empty", "invalid"):
+        assert not (root / mode / "optimization_steps").exists(), mode
     recorded = root / "on" / "optimization_steps" / "fit_000001"
     frames = sorted(recorded.glob("step_*.dat"))
     assert len(frames) > 5
@@ -80,7 +86,7 @@ def main():
     assert (recorded.parent / "fit_000002").is_dir()
     assert before == {p.name: p.read_bytes() for p in recorded.iterdir()}
     print(f"PASS: {len(frames)} states, {len(ordinary)} candidate evaluations, {len(calls)} total calls")
-    print(f"PASS: identical evaluation trajectory/results with recorder on, off, and I/O failure; {root}")
+    print(f"PASS: recording off by default; identical trajectory/results for all switch modes and I/O failure; {root}")
 
 
 if __name__ == "__main__":

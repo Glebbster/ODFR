@@ -4,9 +4,13 @@
 
 ODFR simulates and fits slow-motion EPR spectra of spin probes, especially nitroxide radicals, in partially oriented samples. It jointly fits spectra recorded at different sample angles to study molecular orientation distributions and rotational mobility, using MOMD and ODF models.
 
-This is a maintained continuation of [ODFR 4.3](https://sourceforge.net/projects/odfr/), originally developed by Andrey Kh. Vorobiev. Version **5.0.0** packages the verified `Projects/main` source snapshot; [CHANGELOG.md](CHANGELOG.md) identifies the functional changes and their source files.
+This is a maintained continuation of [ODFR 4.3](https://sourceforge.net/projects/odfr/), originally developed by Andrey Kh. Vorobiev. Version **5.0.0** is based on the verified `Projects/main` source snapshot; [CHANGELOG.md](CHANGELOG.md) identifies the functional changes and their source files.
 
-## Download and run on Windows x64
+[Installation](#installation) · [Manuals and descriptions](#manuals-and-descriptions) · [Licenses](#licenses)
+
+## Installation
+
+### Download and run on Windows x64
 
 1. Download and extract **ODFR-5.0.0-windows-x64.zip** from [Releases](https://github.com/Glebbster/ODFR/releases/tag/v5.0.0).
 2. `bin/ODFR5_serial.exe` needs no compiler, Python or MPI installation. The GNU runtime is linked statically.
@@ -22,7 +26,7 @@ cd C:\work\my-calculation
 
 Adjust both paths to your extraction/calculation directories. Each simultaneous calculation needs its own working directory: `temp*`, `history` and optimization recordings use shared names. Choose a process count suited to the available cores and `NORT`; this MPI implementation does not require divisibility between the process count and `NORT`.
 
-## Build from source
+### Build from source
 
 Required: **CMake 3.20+, GNU Fortran and a build tool**. Python 3 enables the optimizer observer test; the program itself does not need Python. MPI is optional. Serial builds use included MPI stubs and need no MPI installation or external BLAS/LAPACK.
 
@@ -36,7 +40,7 @@ git checkout v5.0.0
 
 Run the following commands from the directory containing `CMakeLists.txt`.
 
-### Windows: install packages, then compile
+#### Windows: install packages, then compile
 
 Install [MSYS2](https://www.msys2.org/), open **MSYS2 MINGW64**, and update it:
 
@@ -78,7 +82,7 @@ ctest --test-dir out/windows-mpi --output-on-failure
 
 Result: `out/windows-mpi/bin/ODFR5_serial.exe` and `ODFR5_mpi.exe`. The MSYS2 MPI package supplies the build interface; the separately installed Microsoft runtime supplies `mpiexec.exe` and `msmpi.dll`.
 
-### Ubuntu / Debian
+#### Ubuntu / Debian
 
 ```bash
 sudo apt update
@@ -99,7 +103,7 @@ ctest --test-dir out/linux-mpi --output-on-failure
 
 Executables are in the selected build directory's `bin/`. Run MPI as `mpiexec -n 2 /path/to/ODFR5_mpi` from the calculation directory.
 
-### macOS
+#### macOS
 
 Install [Homebrew](https://brew.sh/) using its official instructions, then:
 
@@ -120,16 +124,24 @@ For MPI, first run `brew install open-mpi`, then repeat the three commands using
 
 **Release verification:** Windows x64 is tested for this release. Linux and macOS commands describe the supported build configuration; they have not been executed for this release. The existing `ODFR4_BUILD_*` option and CMake target names are retained for compatibility.
 
-## Tests, manual and weights
+Package references: [MSYS2 CMake](https://www.msys2.org/docs/cmake/), [MSYS2 MPI package](https://packages.msys2.org/packages/mingw-w64-x86_64-msmpi), [Homebrew GCC](https://formulae.brew.sh/formula/gcc), [Homebrew Open MPI](https://formulae.brew.sh/formula/open-mpi).
 
+## Manuals and descriptions
+
+- [Architecture](docs/ARCHITECTURE.md).
 - [Original manual](docs/ODF_manual4_3.pdf): the supplied ODFR 4.3 PDF, unchanged. Its old executable names and MPI implementation notes must be read alongside this README and the changelog.
 - [ODFR_Tests](examples/ODFR_Tests): ten example datasets, including their supplied historical outputs. Copy a case to a separate directory before running it. These are examples, not newly certified reference results.
 - [Build tests](tests/README.md): weighted smoke and HGO regression tests, serial and two-process MPI variants, optimizer observer checks. Build **all targets** before running all CTest tests; Python must be found for the observer test.
-- Point weights: `iwflag=4` applies point coefficients, `iwflag=5` also applies the existing `rmsn` normalization. `weight` (fallback: `weight.dat`) contains exactly `ndatot` coefficients, one per line, in the concatenated fitted-spectrum grid order. Coefficients multiply residuals, so their contribution to squared loss is squared; zero excludes a point. Missing or wrongly sized files fall back to unit coefficients and print a diagnostic. Existing ODF penalties remain part of the objective.
 - [Weights and optimization steps](docs/README.md): exact PAR lines and recording settings. [Weights.py](tools/README.md) creates a weight file interactively.
 
-## License and origin
+To examine modeling steps in detail, enable recording in the same terminal before running ODFR. It is off by default.
+
+```powershell
+$env:ODFR_OPTIMIZATION_STEPS = '1'  # enable; '0' disables
+```
+
+## Licenses
 
 [GNU GPL v3](LICENSE). Original copyright notices are preserved. The scientific model and citation information are described in the unchanged manual and [original project](https://sourceforge.net/projects/odfr/).
 
-Package references: [MSYS2 CMake](https://www.msys2.org/docs/cmake/), [MSYS2 MPI package](https://packages.msys2.org/packages/mingw-w64-x86_64-msmpi), [Homebrew GCC](https://formulae.brew.sh/formula/gcc), [Homebrew Open MPI](https://formulae.brew.sh/formula/open-mpi).
+[Runtime license notices](licenses/README.md).

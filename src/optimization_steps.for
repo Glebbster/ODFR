@@ -40,7 +40,8 @@ c     Two snapshots follow the solver's current R and saved R exactly.
       if (mpi_rank.ne.0) return
       call get_environment_variable('ODFR_OPTIMIZATION_STEPS',option,
      #                              status=ios)
-      if (ios.eq.0.and.trim(option).eq.'0') return
+      if (ios.ne.0) return
+      if (trim(option).ne.'1') return
       allocate(fields(n,2),models(n,2),parameters(p,2),last_x(p),
      #         stat=ios)
       if (ios.ne.0) then

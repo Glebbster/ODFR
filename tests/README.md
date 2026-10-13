@@ -8,7 +8,7 @@ Build all targets, then run `ctest --test-dir out/windows-mpi --output-on-failur
 | `hgo_h2_rt_serial` | 1024-point HGO case, output contents/size, weighted SSE in the existing `1.xE-02` range |
 | `smoke_mpi_2` | Same smoke assertions using two MPI processes |
 | `hgo_h2_rt_mpi_2` | Same HGO assertions using two MPI processes |
-| `optimization_steps_observer` | Analytic NL2SOL case: accepted states, rollback, rejection/covariance exclusion, identical trajectory/results with recording on/off/I/O failure, preservation of an existing session |
+| `optimization_steps_observer` | Analytic NL2SOL case: accepted states, rollback, rejection/covariance exclusion, recording off by default (unset/0/empty/invalid), enabled by 1, identical trajectory/results in all modes and on I/O failure, preservation of an existing session |
 
 CTest copies input datasets into the build directory. Do not point test runners at a live calculation. `ctest -L serial` and `ctest -L mpi` omit the observer test; running all tests avoids this omission. MPI tests need `mpiexec` and a working runtime. These tests verify specific behavior, not the full physical model or performance.
 
