@@ -1,0 +1,5 @@
+2
+isoF.par,rtmp.par, 1      {initial and result files ODF, number of spectra)
+sampl3_5.par,sampl3_5r.par,sampl3.esr, sampl3_5.dat,  0  
+end 
+

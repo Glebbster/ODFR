@@ -1,0 +1,12 @@
+1
+F322-21r.par,F322-21br.par, 8     {initial and result files ODF, number of spectra)
+322_000_21b.par, 322_000_21br.par, d322-0n.esr, 322_000_21b.dat, 2  
+322_010_21r.par, 322_010_21br.par, d322-10n.esr,322_010_21b.dat, 2  
+322_030_21r.par, 322_030_21br.par, d322-30n.esr,322_030_21b.dat, 2  
+322_050_21r.par, 322_050_21br.par, d322-50n.esr,322_050_21b.dat, 2  
+322_070_21r.par, 322_070_21br.par, d322-70n.esr,322_070_21b.dat, 2
+322_090_21r.par, 322_090_21br.par, d322-90n.esr,322_090_21b.dat, 2
+322_125_21r.par, 322_125_21br.par,d322-125n.esr,322_125_21b.dat, 2  
+322_165_21r.par, 322_165_21br.par,d322-165n.esr,322_165_21b.dat, 2
+end
+             

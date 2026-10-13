@@ -1,0 +1,59 @@
+  1
+F16nr.par,F16nr.par      10      {initial and result files ODF, number of spectra)
+F16n_00r.par, F16n_00r.par, d283-0n.esr, F16n_00.dat  2
+F16n_10r.par, F16n_10r.par, d283-10n.esr,F16n_10.dat 2
+F16n_20r.par, F16n_20r.par, d283-20n.esr,F16n_20.dat 2
+F16n_30r.par, F16n_30r.par, d283-30n.esr,F16n_30.dat 2
+F16n_40r.par, F16n_40r.par, d283-40n.esr,F16n_40.dat 2
+F16n_50r.par, F16n_50r.par, d283-50n.esr,F16n_50.dat 2
+F16n_60r.par, F16n_60r.par, d283-60n.esr,F16n_60.dat 2
+F16n_70r.par, F16n_70r.par, d283-70n.esr,F16n_70.dat 2
+F16n_80r.par, F16n_80r.par, d283-80n.esr,F16n_80.dat 2
+F16n_90r.par, F16n_90r.par, d283-90n.esr,F16n_90.dat 2
+end
+
+ 1
+F9F4r.par,F23cFr.par, 18      {initial and result files ODF, number of spectra)
+F27c_00.par, F27c_00r.par, d283-0n.esr,F27c_00.dat  2
+F23a_10r.par, F27c_10r.par, d283-10n.esr,F27c_10.dat 2
+F23a_20r.par, F27c_20r.par, d283-20n.esr,F27c_20.dat 2
+F23a_30r.par, F27c_30r.par, d283-30n.esr,F27c_30.dat 2
+F23a_40r.par, F27c_40r.par, d283-40n.esr,F27c_40.dat 2
+F23a_50r.par, F27c_50r.par, d283-50n.esr,F27c_50.dat 2
+F23a_60r.par, F27c_60r.par, d283-60n.esr,F27c_60.dat 2
+F23a_70r.par, F27c_70r.par, d283-70n.esr,F27c_70.dat 2
+F23a_80r.par, F27c_80r.par, d283-80n.esr,F27c_80.dat 2
+F23a_90r.par, F27c_90r.par, d283-90n.esr,F27c_90.dat 2
+F23a100r.par, F27c100r.par, d283100n.esr,F27c100.dat 2
+F23a110r.par, F27c110r.par, d283110n.esr,F27c110.dat 2
+F23a120r.par, F27c120r.par, d283120n.esr,F27c120.dat 2
+F23a130r.par, F27c130r.par, d283130n.esr,F27c130.dat 2
+F23a140r.par, F27c140r.par, d283140n.esr,F27c140.dat 2
+F23a150r.par, F27c150r.par, d283150n.esr,F27c150.dat 2
+F23a160r.par, F27c160r.par, d283160n.esr,F27c160.dat 2
+F23a170r.par, F27c170r.par, d283170n.esr,F27c170.dat 2
+end
+ 1
+F27aF.par,F27aFr.par, 18      {initial and result files ODF, number of spectra)
+F27b_00.par, F27b_00r.par, d283-0n.esr,F27b_00.dat  2
+F15h_10r.par, F27b_10r.par, d283-10n.esr,F27b_10.dat 2
+F15h_20r.par, F27b_20r.par, d283-20n.esr,F27b_20.dat 2
+F15h_30r.par, F27b_30r.par, d283-30n.esr,F27b_30.dat 2
+F15h_40r.par, F27b_40r.par, d283-40n.esr,F27b_40.dat 2
+F15h_50r.par, F27b_50r.par, d283-50n.esr,F27b_50.dat 2
+F15h_60r.par, F27b_60r.par, d283-60n.esr,F27b_60.dat 2
+F15h_70r.par, F27b_70r.par, d283-70n.esr,F27b_70.dat 2
+F15h_80r.par, F27b_80r.par, d283-80n.esr,F27b_80.dat 2
+F15h_90r.par, F27b_90r.par, d283-90n.esr,F27b_90.dat 2
+F15h100r.par, F27b100r.par, d283100n.esr,F27b100.dat 2
+F15h110r.par, F27b110r.par, d283110n.esr,F27b110.dat 2
+F15h120r.par, F27b120r.par, d283120n.esr,F27b120.dat 2
+F15h130r.par, F27b130r.par, d283130n.esr,F27b130.dat 2
+F15h140r.par, F27b140r.par, d283140n.esr,F27b140.dat 2
+F15h150r.par, F27b150r.par, d283150n.esr,F27b150.dat 2
+F15h160r.par, F27b160r.par, d283160n.esr,F27b160.dat 2
+F15h170r.par, F27b170r.par, d283170n.esr,F27b170.dat 2
+end             
+
+
+

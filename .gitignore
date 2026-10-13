@@ -1,0 +1,9 @@
+/out/
+__pycache__/
+*.o
+*.mod
+*.smod
+*.exe
+.DS_Store
+/.venv/
+/dist/

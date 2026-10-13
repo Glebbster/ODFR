@@ -1,0 +1,2 @@
+      character*16 ODFR_VERSION
+      parameter (ODFR_VERSION='@ODFR4_VERSION@')

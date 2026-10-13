@@ -1,0 +1,13 @@
+  1
+Fk18p-1d.par,Fk18p-1dr.par, 8      {initial and result files ODF, number of spectra)
+k18p-000-1d.par, k18p-000-1dr.par,k18-0n.esr,   k18p-000-1d.dat, 0  
+k18p-010-1d.par, k18p-010-1dr.par,k18-10n.esr,  k18p-010-1d.dat, 0
+k18p-030-1d.par, k18p-030-1dr.par,k18-30n.esr,  k18p-030-1d.dat, 0
+k18p-050-1d.par, k18p-050-1dr.par,k18-50n.esr,  k18p-050-1d.dat, 0
+k18p-070-1d.par, k18p-070-1dr.par,k18-70n.esr,  k18p-070-1d.dat, 0
+k18p-090-1d.par, k18p-090-1dr.par,k18-90n.esr,  k18p-090-1d.dat, 0
+k18p-125-1d.par, k18p-125-1dr.par,k18-125n.esr, k18p-125-1d.dat, 0
+k18p-165-1d.par, k18p-165-1dr.par,k18-165n.esr, k18p-165-1d.dat, 0
+end
+
+

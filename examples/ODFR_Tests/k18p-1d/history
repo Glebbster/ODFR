@@ -1,0 +1,35 @@
+ ODFR4_3                       
+ Simulation   1:
+ Fk18p-1d.par Fk18p-1dr.pa
+ files : k18p-000-1d.par      k18p-000-1dr.par     k18-0n.esr           k18p-000-1d.dat     
+ files : k18p-010-1d.par      k18p-010-1dr.par     k18-10n.esr          k18p-010-1d.dat     
+ files : k18p-030-1d.par      k18p-030-1dr.par     k18-30n.esr          k18p-030-1d.dat     
+ files : k18p-050-1d.par      k18p-050-1dr.par     k18-50n.esr          k18p-050-1d.dat     
+ files : k18p-070-1d.par      k18p-070-1dr.par     k18-70n.esr          k18p-070-1d.dat     
+ files : k18p-090-1d.par      k18p-090-1dr.par     k18-90n.esr          k18p-090-1d.dat     
+ files : k18p-125-1d.par      k18p-125-1dr.par     k18-125n.esr         k18p-125-1d.dat     
+ files : k18p-165-1d.par      k18p-165-1dr.par     k18-165n.esr         k18p-165-1d.dat     
+ 
+    it    nf      f        reldf      preldf     reldx
+  
+     0     1
+   0.96569084E-05   1.0691563     -0.35475568       4.7556946    
+     1     2  0.964E-05  0.159E-02  0.241E-02  0.193E-01
+   0.96415984E-05  0.99973500     -0.24433389       4.7881843    
+     2     3  0.964E-05  0.970E-04  0.327E-03  0.811E-02
+   0.96406639E-05   1.0276182     -0.28113218       4.7743505    
+     3     4  0.964E-05  0.992E-04  0.948E-04  0.322E-02
+   0.96397076E-05   1.0287870     -0.27847983       4.7724253    
+     4     5  0.964E-05  0.135E-05  0.936E-06  0.202E-03
+  
+Relative function convergence.
+ iv(1)=           4
+ sum=  0.157922296075974     
+ sum/npoint=  9.638812016355855E-006
+ var=  1.029     Sigma= 0.2132E-01
+ var=-0.2785     Sigma= 0.5772E-01
+ var=  4.772     Sigma= 0.2338E-01
+ C    1.000    ; 
+ C  -0.5893    ;    1.000    ; 
+ C   0.3024    ;  -0.5291    ;    1.000    ; 
+   CPU time:    74.0380746000000     

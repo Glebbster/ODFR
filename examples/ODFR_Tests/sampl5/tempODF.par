@@ -1,0 +1,27 @@
+   0    1 - axial ODF, 2 -frozen ODF, 3 - orthorhombic to nonrhombic, 4 -reverse 
+             0     1.000       1000 PenFlg, Penalty coef., Net for ODF integration
+ ODF with neg.part               0.000000000000000E+000
+           0           0    (order, keyODF)
+ An0          Fl An2          Fl An4          Fl An6          Fl An8          Fl
+   0.0000      0
+ ODF with neg.part               0.000000000000000E+000
+           0           0    (order, keyODF)
+ An0          Fl An2          Fl An4          Fl An6          Fl An8          Fl
+   0.0000      0
+ 
+ Order parameters for potential 1:
+  j,n - even
+  0   1.0000    
+  2  0.76994      0.14766E-01
+  4  0.44449      0.26314E-01  0.87483E-03
+  6  0.20267      0.22003E-01  0.14097E-02  0.71148E-04
+  8  0.76069E-01  0.12373E-01  0.11909E-02  0.87017E-04  0.58564E-05
+ 10  0.24284E-01  0.52878E-02  0.68171E-03  0.68027E-04  0.53014E-05  0.43586E-06
+ Order parameters for potential 2:
+  j,n - even
+  0   1.0000    
+  2  0.37305E-01  0.16555E-01
+  4  0.10601E-02  0.57775E-03  0.28432E-03
+  6  0.27649E-04  0.17647E-04  0.63757E-05  0.40921E-05
+  8  0.40611E-05  0.24475E-05  0.83759E-06 -0.10181E-05  0.33663E-06
+ 10  0.14235E-04 -0.71860E-05  0.57679E-05 -0.14996E-05 -0.65732E-06  0.28539E-06

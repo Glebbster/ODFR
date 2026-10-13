@@ -1,0 +1,13 @@
+*.f text eol=lf
+*.for text eol=lf
+*.f90 text eol=lf
+*.inc text eol=lf
+*.cmake text eol=lf
+CMakeLists.txt text eol=lf
+Makefile text eol=lf
+*.md text eol=lf
+*.nam text eol=lf
+
+examples/ODFR_Tests/** -text
+*.pdf binary
+*.in text eol=lf

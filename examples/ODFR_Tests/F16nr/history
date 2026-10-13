@@ -1,0 +1,16 @@
+ ODFR4_3                       
+ Simulation   1:
+ F16nr.par    F16nr.par   
+ files : F16n_00r.par         F16n_00r.par         d283-0n.esr          F16n_00.dat         
+ files : F16n_10r.par         F16n_10r.par         d283-10n.esr         F16n_10.dat         
+ files : F16n_20r.par         F16n_20r.par         d283-20n.esr         F16n_20.dat         
+ files : F16n_30r.par         F16n_30r.par         d283-30n.esr         F16n_30.dat         
+ files : F16n_40r.par         F16n_40r.par         d283-40n.esr         F16n_40.dat         
+ files : F16n_50r.par         F16n_50r.par         d283-50n.esr         F16n_50.dat         
+ files : F16n_60r.par         F16n_60r.par         d283-60n.esr         F16n_60.dat         
+ files : F16n_70r.par         F16n_70r.par         d283-70n.esr         F16n_70.dat         
+ files : F16n_80r.par         F16n_80r.par         d283-80n.esr         F16n_80.dat         
+ files : F16n_90r.par         F16n_90r.par         d283-90n.esr         F16n_90.dat         
+  8.629808782154157E-006
+  Finished
+   CPU time:    189.884417200000     

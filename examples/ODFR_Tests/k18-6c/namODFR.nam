@@ -1,0 +1,13 @@
+  1
+Fk18-6c.par,Fk18-6cr.par, 8      {initial and result files ODF, number of spectra)
+k18-000-6c.par, k18-000-6cr.par,k18-0n.esr,   k18-000-6c.dat, 2  
+k18-010-6c.par, k18-010-6cr.par,k18-10n.esr,  k18-010-6c.dat, 2
+k18-030-6c.par, k18-030-6cr.par,k18-30n.esr,  k18-030-6c.dat, 2
+k18-050-6c.par, k18-050-6cr.par,k18-50n.esr,  k18-050-6c.dat, 2
+k18-070-6c.par, k18-070-6cr.par,k18-70n.esr,  k18-070-6c.dat, 2
+k18-090-6c.par, k18-090-6cr.par,k18-90n.esr,  k18-090-6c.dat, 2
+k18-125-6c.par, k18-125-6cr.par,k18-125n.esr, k18-125-6c.dat, 2
+k18-165-6c.par, k18-165-6cr.par,k18-165n.esr, k18-165-6c.dat, 2
+end
+
+

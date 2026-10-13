@@ -1,0 +1,90 @@
+3   0  0  control value:  1 - stop iterations, 2 - single calculation, 3 - single&shift&scale 
+5,   2      (Number of variated parameters),(number of paramagnetic centers max=5) 
+200, 2      (Number points in spec. to be calculated nfield),(NUMAVE - point for average)
+1,   1      (direction of exp.spectrum +-1),(direction of res.spectra +-1)
+0.0, 1.0, 0 (ShiftExp for experimental spectrum),(noise level (rmsn))
+3400.0, -45.0, 45.0  (forced field of centr (b0)), (fieldi),(fieldf)
+1.0D-6, 1.0D-6, 1.0D-6 Tolerance for parameters (XTOL),chi2 (FTOL),gradient(GTOL)
+2    0.0    (twice the nuclear spin [in2]), (gamman-gyromagnetic ratio (radians / sec*gauss))
+0
+1,   0       (num. of orient-s (>1 for MOMD),(Libration sin2 -1,Grif -2,Tim -3)  
+0,   0      (diffusion model index ipdf),(number of terms in the potential [ipt]
+1,   0	    (calculation type (0=L,1=CG,2=FS) [itype]),(ist - number of sites for discrete jumps)
+1e-6,500    (error tolerance for residuals [cgtol]),(number of Lanczos/CG steps [nstep])
+6,5,4,4,2	truncation values  [lemx,lomx,kmx,mmx,ipnmx]
+0,  0,  0      (non-Brownian flags ml,mxy,mzz]
+           Flag         Flag        Flag
+  0.0     0  0.0       0  0.7147334 1  Spectrum shift , microwave ohase, content factor
+  1.994103  0  0.0       0  0.0      0  0.0 0 Gauss line width (gib0+sin2psi*gib2) (gib2 -for MOMD and ipt only)(reserved) 
+  0.0       0  0.0       0  0.0      0  0.0 0 Lorentz line width (wxx,wyy,wzz)
+  2.0089    0  2.006300  0  2.002100 0  g-values
+  5.0       0  5.0       0  33.0     0	A values
+  0.0       0  0.0       0  0.0      0  magnetic tilt [alm,bem,gam] (degrees)
+  1.384988E+07   2  1.384988E+07   5 1.384988E+07   5  diffusion tensor (dx,dy,dz,1/sec)
+  0.0       0  0.0       0  0.0      0  diffusion tilt [ald,bed,gad] (degrees) 
+  0.0       0  0.0       0  0.0	     0	[pml,pmxy,pmzz] 
+  0.0       0  0.0       0  0.0      0 (discrete jumps [djf]),(djfprp),(oss)
+  0.0       0  0.0       0  0.0      0  potentials (2,0),(2,2),(4,0)
+  0.0       0  0.0       0  0.0      0  potentials (4,2),(4,4),(dlam=dc20)
+  0.0       0  0.0       0  0.0      0      libration 
+  0.0       0  0.0       0  0.0      0      libration 
+  0.0       0  0.0       0  0.0      0  psi, reserved, reserved
+ 0
+2    0.0    (twice the nuclear spin [in2]), (gamman-gyromagnetic ratio (radians / sec*gauss))
+0
+1,   0       (num. of orient-s (>1 for MOMD),(Libration sin2 -1,Grif -2,Tim -3)  
+0,   0      (diffusion model index ipdf),(number of terms in the potential [ipt]
+1,   0	    (calculation type (0=L,1=CG,2=FS) [itype]),(ist - number of sites for discrete jumps)
+1e-3,500     (error tolerance for residuals [cgtol]),(number of Lanczos/CG steps [nstep])
+6,5,4,4,2	truncation values  [lemx,lomx,kmx,mmx,ipnmx]
+0,  0,  0      (non-Brownian flags ml,mxy,mzz]
+           Flag         Flag        Flag
+  0.0     0  0.0       0  0.2852620  1  Spectrum shift , microwave ohase, content factor
+  1.994103  0  0.0       0  0.0      0 0.0 0 Gauss line width (gib0+sin2psi*gib2) (gib2 -for MOMD and ipt only)(reserved) 
+  0.0       0  0.0       0  0.0      0 0.0 0 Lorentz line width (wxx,wyy,wzz)
+  2.0089    0  2.006300  0  2.002100 0  g-values
+  5.0       0  5.0       0  33.0     0	A values
+  0.0       0  0.0       0  0.0      0  magnetic tilt [alm,bem,gam] (degrees)
+  6.901120E+06   2  6.90112E+07   2 6.90112E+07  0  diffusion tensor (dx,dy,dz,1/sec)
+  0.0       0  0.0       0  0.0      0  diffusion tilt [ald,bed,gad] (degrees) 
+  0.0       0  0.0       0  0.0	     0	[pml,pmxy,pmzz] 
+  0.0       0  0.0       0  0.0      0 (discrete jumps [djf]),(djfprp),(oss)
+  0.0       0  0.0       0  0.0      0  potentials (2,0),(2,2),(4,0)
+  0.0       0  0.0       0  0.0      0  potentials (4,2),(4,4),(dlam=dc20)
+  0.0       0  0.0       0  0.0      0      libration 
+  0.0       0  0.0       0  0.0      0      libration 
+  0.0       0  0.0       0  0.0      0  psi, reserved, reserved
+
+
+Flags: 1 - variate, 
+	   2 - variate in transformed form, 
+	   3 - calculate from variated parameter 
+	   4 - axial (mark valY, means valY=valX)
+	   5 - isotropic (mark valY and valZ, means valY=valX and valZ=valX)
+Diffusion model index 0: Brownian motion
+                      1: Nonbrownian motion
+                      2: Anisotropic viscosity
+if ipdf=2 then ist=0 and djf is the parallel diffusion coefficient in the director frame 
+[djfprp] (1/sec)-perpendicular diffusion coefficient for anisotropic viscosity term
+[oss] - Heisenberg spin exchange frequency [oss]
+Truncation value for K-space is used if the magnetic tensors in 
+the diffusion frame are complex-valued. This can result 
+from nonzero alpha or gamma magnetic or diffusion tilt angles.
+Truncation value for M-space is used with a nonzero nuclear Zeeman 
+Libratrions:
+	1 - low angular oscillations around g-axes (as Dzuba);
+	   parameters - <sin^2alfa>
+	2 - unlimited oscillation around g-axes (analog Griffits) with
+       uniform distribution into interval -alfa - +alfa;
+	3 - unlimited oscillation around arbitrary axes (analog Timofeev) with
+       uniform distribution into interval -alfa - +alfa;
+As hw,sdvig and g-values are interconnected values, 
+it should be variated at once.
+If B0 is indicated, hw is ignored,
+if B0=0 , hw used for calculation B0
+hw can be variated in transformed form only (2)
+NORTANG - number spectra in angular dependence, Names - in name.nam,
+          angles psi are taken from first string in each esr spectrum
+Lorentz frame itw = 0 - g-frame
+                    1 - A-frame
+                    2 - diffusion frame

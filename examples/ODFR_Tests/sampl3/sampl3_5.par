@@ -1,0 +1,31 @@
+ 3     0     1   Kcontrol, keyiparm, keyCov
+ 7     1   number of var, number of sites
+ 500   2   number of points, NumAve
+ 1     1   key for exp.spectr,key for calc.spectr
+    0.0  1.00000 4   Shift for exp.spectr, exp.noise, weighted/unweighted
+ 3400.0  -40.0   40.0   B0, fieldi, fieldf
+ 0.1E-04   0.1E-04   0.1E-04   (XTOL),(FTOL),gradient(GTOL)
+ 2     0.000000   twice the nuclear spin [in2], gamman
+ 0
+15    0   NORT, keyLib
+ 0     1   diffusion model,number of potential terms
+ 0     0   Lorentz frame,number of sites for jumps
+ 0.1E-05        0   error tolerance [cgtol],number of Lanczos/CG steps
+          10           9           6           2           2
+  0    0    0   non-Brownian flags ml,mxy,mzz
+        flag
+  0.006782988137  1   0.000000000000  0  88.804266186810  1  Shift, phase, content
+  0.947500935449  1   0.000000000000  0   2.778655639439  1   0.000000000000  0  gib0,gib2,gibX
+  0.000000000000  0   0.000000000000  0   0.000000000000  0   0.000000000000  0  Lorentz width,rsv
+  2.008900000000  0   2.005800000000  0   2.002100000000  0   g-values
+  4.900000000000  0   4.900000000000  0  33.000000000000  0   A-values
+  0.000000000000  0   0.000000000000  0   0.000000000000  0   magnetic tilt [alm,bem,gam]
+    0.502656E+08  2     0.502656E+08  4     0.970079E+08  2   diffusion tensor [dx,dy,dz]
+  0.000000000000  0   0.000000000000  0   0.000000000000  0   diffusion tilt [ald,bed,gad]
+  0.000000000000  0   0.000000000000  0   0.000000000000  0   [pml,pmxy,pmzz]
+     0.00000      0      0.00000      0      0.00000      0   jumps [djf]),(djfprp),(oss)
+  2.020347393886  1   0.000000000000  0   0.000000000000  0   potentials (2,0),(2,2),(4,0)
+  0.000000000000  0   0.000000000000  0   0.000000000000  0   potentials (4,2),(4,4),dlam
+  0.000000000000  0   0.000000000000  0   0.000000000000  0   librations
+  0.000000000000  0   0.000000000000  0   0.000000000000  0   librations
+  0.000000000000  0   0.000000000000  0   0.000000000000  0   rsrv,psi,rsrv
