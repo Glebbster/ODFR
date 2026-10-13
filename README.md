@@ -118,18 +118,18 @@ ctest --test-dir out/macos --output-on-failure
 
 For MPI, first run `brew install open-mpi`, then repeat the three commands using `out/macos-mpi` and `-DODFR4_BUILD_MPI=ON`. Executables are in `bin/` inside the build directory.
 
-**Release verification:** Windows x64 is tested for this release. Linux and macOS commands describe the supported build configuration; they have not been executed for this release. See [validation](docs/RELEASE_VALIDATION.md). The existing `ODFR4_BUILD_*` option and CMake target names are retained for compatibility.
+**Release verification:** Windows x64 is tested for this release. Linux and macOS commands describe the supported build configuration; they have not been executed for this release. The existing `ODFR4_BUILD_*` option and CMake target names are retained for compatibility.
 
 ## Tests, manual and weights
 
 - [Original manual](docs/ODF_manual4_3.pdf): the supplied ODFR 4.3 PDF, unchanged. Its old executable names and MPI implementation notes must be read alongside this README and the changelog.
 - [ODFR_Tests](examples/ODFR_Tests): ten example datasets, including their supplied historical outputs. Copy a case to a separate directory before running it. These are examples, not newly certified reference results.
-- [Build tests](tests/README.md): weighted smoke and HGO regression tests, serial and two-process MPI variants, optimizer observer and archive checks. Build **all targets** before running all CTest tests; Python must be found for the observer test.
+- [Build tests](tests/README.md): weighted smoke and HGO regression tests, serial and two-process MPI variants, optimizer observer checks. Build **all targets** before running all CTest tests; Python must be found for the observer test.
 - Point weights: `iwflag=4` applies point coefficients, `iwflag=5` also applies the existing `rmsn` normalization. `weight` (fallback: `weight.dat`) contains exactly `ndatot` coefficients, one per line, in the concatenated fitted-spectrum grid order. Coefficients multiply residuals, so their contribution to squared loss is squared; zero excludes a point. Missing or wrongly sized files fall back to unit coefficients and print a diagnostic. Existing ODF penalties remain part of the objective.
-- [Optimization recordings](docs/OPTIMIZATION_STEPS.md): accepted NL2SOL spectra and optional Python animation/archive tools. Set `ODFR_OPTIMIZATION_STEPS=0` to disable recording. For the Python tools install `numpy matplotlib pillow` in a Python virtual environment; none is needed to run the Fortran executables.
+- [Weights and optimization steps](docs/README.md): exact PAR lines and recording settings. [Weights.py](tools/README.md) creates a weight file interactively.
 
 ## License and origin
 
-[GNU GPL v3](LICENSE). Original copyright notices are preserved. The scientific model and citation information are described in the unchanged manual and [original project](https://sourceforge.net/projects/odfr/). [Source provenance](docs/SOURCE_PROVENANCE.md) records the exact imported revision and upstream comparison archives.
+[GNU GPL v3](LICENSE). Original copyright notices are preserved. The scientific model and citation information are described in the unchanged manual and [original project](https://sourceforge.net/projects/odfr/).
 
 Package references: [MSYS2 CMake](https://www.msys2.org/docs/cmake/), [MSYS2 MPI package](https://packages.msys2.org/packages/mingw-w64-x86_64-msmpi), [Homebrew GCC](https://formulae.brew.sh/formula/gcc), [Homebrew Open MPI](https://formulae.brew.sh/formula/open-mpi).
