@@ -65,7 +65,11 @@ c   Add weight flag and list of weight for weighted calc of residuals
       DOUBLE PRECISION fparms(NFPRM,MXSITE,MXSPC)
         COMMON /COMPARMS/ iparms,fparms
       integer jsim,itemp,ii,jtmp,jnext,numstor(MXSITE,MXSPC)
-      save numstor
+      integer jstore,storused(MXSPC),zndone(MXSITE*MXSPC*MAXNORT)
+      double complex store1(MXDIM,MAXStorMat),store2(MXDIM,MAXStorMat)
+      common /tempmomdls/ store1,store2,zndone
+      logical reuseOneShot
+      save numstor,storused,reuseOneShot
         common/flfst/flfirst,jsim
       logical depOK,useMOMD
       integer modtd,iflvar,filenprm
@@ -215,10 +219,14 @@ c --- file not found
      #                 numODFs=numODFs+1  
         enddo                   
 c allocate room for ort spectra storage (alpha,betta) 
+c Keep the slot layout fixed for this simulation.
+          reuseOneShot=(Kcontrol.eq.2.and.nprm.eq.0)
           jnext=1
-          do isp=1,nspc 
+          do isp=1,nspc
+c One-shot uses FULL for each site and has no later Jacobian reuse.
+            if (reuseOneShot) jnext=1
             do isi=1,nnsite(isp)
-              if (useMOMD(isi,isp)) then 
+              if (useMOMD(isi,isp).and..not.reuseOneShot) then
 c spectra/sites for calculation using iort spectra for first spectrum:              
                 modtd(isi,isp)=0	
                 numstor(isi,isp)=numstor(isi,1)
@@ -234,16 +242,16 @@ c spectra/sites for calculation using iort spectra for first spectrum:
                 endif    
               endif !useMOMD(isi,isp)                
             enddo
+            if (reuseOneShot) storused(isp)=jnext-1
+            if ((reuseOneShot.or.isp.eq.nspc).and.
+     #          (jnext-1).gt.MAXStorMat) then
+              if (mpi_rank.eq.0) write(*,*)'Insufficient room
+     #              for tridiagonal matrices storage'
+              if (mpi_rank.eq.0) write(2,*)'Insufficient room
+     #              for tridiagonal matrices storage'
+              stop
+            endif
           enddo
-c
-          if ((jnext-1).gt.MAXStorMat) then
-            if (mpi_rank.eq.0) write(*,*)'Insufficient room
-     #            for tridiagonal matrices storage'
-            if (mpi_rank.eq.0) write(2,*)'Insufficient room
-     #            for tridiagonal matrices storage'
-             stop            
-c
-          endif
 c
           fldShftSite(1)=0.d0
           flfirst=.false.
@@ -285,7 +293,14 @@ c       -----------------------------------
 c        Loop over spectra 
 c       -----------------------------------
         rdsqCom=0.0d0
-        do isp=1,nspc        
+        do isp=1,nspc
+c Seed reused diagonals like fresh slots. Early CG convergence
+c can leave the last diagonal entry unwritten.
+          if (reuseOneShot) then
+            do jstore=1,storused(isp)
+              store1(:,jstore)=(0.0d0,0.0d0)
+            enddo
+          endif
 c
           ixs=ixsp(isp)
           do jpt=1,npts(isp)
