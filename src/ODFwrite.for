@@ -24,7 +24,7 @@ c
 c ###################################################################
 c
       if (mpi_rank.ne.0) return
-	OPEN(UNIT=3,FILE=FileName)
+	call open_output(3,FileName)
 	write(3,114) ODFcontrol  
  114  FORMAT (2x,I2,2x, '  1 - axial ODF, 2 -frozen ODF,
      # 3 - orthorhombic to nonrhombic, 4 -reverse ')
@@ -213,7 +213,7 @@ c Macro
   	    if (keyODF(isi).eq.0) then 
             write(NamTmp,106)isi
 106         FORMAT (I1)
-            OPEN(UNIT=4,FILE='G'//NamTmp//FileName)
+            call open_output(4,'G'//NamTmp//FileName)
             write(4,110) ordP2(1,1)*ordP1(1,1)            
               do jord=2,Jmx(isi),2
                    ntemp=1+jord/2
@@ -252,7 +252,7 @@ c Mixed
 c Macro      
   	    if (keyODF(isi).eq.0) then 
             write(NamTmp,106)isi
-            OPEN(UNIT=4,FILE='G'//NamTmp//FileName)
+            call open_output(4,'G'//NamTmp//FileName)
             write(4,110) ordP2(1,1)*ordP1(1,1) 
             do jord=2,Jmx(isi),2
                    ntemp=1+jord/2
@@ -293,8 +293,67 @@ c Mixed
       enddo  !isi
   	CLOSE (UNIT=3)          	
 c
-	return
-	end
+      return
+      contains
+
+      subroutine open_output(unit,path)
+      include 'mpif.h'
+      integer unit,k,last,ios,command_status,exit_status,ierr
+      character(*) path
+      character(1024) cwd
+      character(256) message
+      character(:), allocatable :: parent,command
+      logical exists,windows
+c GETCWD returns the native path, unlike the user-controlled OS variable.
+      message='Cannot identify native working directory'
+      call getcwd(cwd,ios)
+      if (ios.ne.0) goto 900
+      windows=cwd(2:2).eq.':'.or.cwd(:2).eq.repeat(achar(92),2)
+      if (.not.windows.and.cwd(1:1).ne.'/') goto 900
+      last=scan(trim(path),'/',back=.true.)
+      if (windows) last=max(last,scan(trim(path),achar(92),
+     #                              back=.true.))
+      message='Cannot create parent directory'
+      if (last.gt.1) then
+         parent=path(:last-1)
+         inquire(file=path(:last)//'.',exist=exists)
+         if (.not.exists) then
+c Reject shell substitutions on Windows; quote literally on POSIX.
+            if (scan(parent,achar(10)//achar(13)).gt.0) goto 900
+            if (windows) then
+               if (scan(parent,'"%!').gt.0) then
+                  message='Cannot auto-create Windows path with "/%/!'
+                  goto 900
+               endif
+               do k=1,len(parent)
+                  if (parent(k:k).eq.'/') parent(k:k)=achar(92)
+               enddo
+               command='mkdir "'//parent//'"'
+            else
+               command="mkdir -p -- '"
+               do k=1,len(parent)
+                  if (parent(k:k).eq."'") then
+                     command=command//"'"//'"'//"'"//'"'//"'"
+                  else
+                     command=command//parent(k:k)
+                  endif
+               enddo
+               command=command//"'"
+            endif
+            exit_status=0
+            call execute_command_line(command,
+     #           exitstat=exit_status,cmdstat=command_status)
+            if (command_status.ne.0.or.exit_status.ne.0) goto 900
+         endif
+      endif
+      open(unit=unit,file=path,iostat=ios,iomsg=message)
+      if (ios.eq.0) return
+  900 write(*,'(A)') 'Cannot write ODF output '//trim(path)//
+     #               ': '//trim(message)
+      call MPI_ABORT(MPI_COMM_WORLD,1,ierr)
+      stop 1
+      end subroutine open_output
+      end
 
 
 		
