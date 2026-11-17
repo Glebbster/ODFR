@@ -133,6 +133,7 @@ if(ODFR4_BUILD_MPI)
 endif()
 
 include(CTest)
+option(ODFR4_TEST_STABILITY "Enable the ten-job stability scenarios" OFF)
 if(BUILD_TESTING)
   add_executable(optimization_steps_probe
     "${ODFR4_SOURCE_DIR}/optimization_steps.for"
@@ -150,6 +151,41 @@ if(BUILD_TESTING)
         "${CMAKE_CURRENT_BINARY_DIR}/tests/observer"
     )
     set_tests_properties(optimization_steps_observer PROPERTIES TIMEOUT 60)
+
+    function(odfr4_add_user_tests suffix mode)
+      set(scenarios batch output_paths)
+      if(ODFR4_TEST_STABILITY)
+        list(APPEND scenarios series)
+      endif()
+      foreach(scenario IN LISTS scenarios)
+        set(test_name "user_${scenario}_${suffix}")
+        add_test(NAME "${test_name}"
+          COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_user_workflow.py"
+            "${scenario}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/smoke/input"
+            "${CMAKE_CURRENT_BINARY_DIR}/tests/user"
+            ${ARGN}
+        )
+        set_tests_properties("${test_name}" PROPERTIES
+          LABELS "user;regression;${mode}" TIMEOUT 900)
+        if(scenario STREQUAL "series")
+          set_property(TEST "${test_name}" APPEND PROPERTY LABELS stability)
+        endif()
+        if(mode STREQUAL "mpi")
+          set_tests_properties("${test_name}" PROPERTIES PROCESSORS 2)
+        endif()
+      endforeach()
+    endfunction()
+
+    if(ODFR4_BUILD_SERIAL)
+      odfr4_add_user_tests(serial serial "$<TARGET_FILE:ODFR4_3_serial>")
+    endif()
+    if(ODFR4_BUILD_MPI)
+      odfr4_add_user_tests(mpi_2 mpi
+        "${MPIEXEC_EXECUTABLE}" "${MPIEXEC_NUMPROC_FLAG}" 2
+        ${MPIEXEC_PREFLAGS} "$<TARGET_FILE:ODFR4_3_mpi>" ${MPIEXEC_POSTFLAGS})
+    endif()
   endif()
 
   if(ODFR4_BUILD_SERIAL)
