@@ -68,8 +68,11 @@ c   Add weight flag and list of weight for weighted calc of residuals
       integer jstore,storused(MXSPC),zndone(MXSITE*MXSPC*MAXNORT)
       double complex store1(MXDIM,MAXStorMat),store2(MXDIM,MAXStorMat)
       common /tempmomdls/ store1,store2,zndone
-      logical reuseOneShot
-      save numstor,storused,reuseOneShot
+      logical reuseOneShot,minpack_fit
+      integer cache_mode,env_status
+      character(len=16) cache_option
+      common /fit_method/ minpack_fit
+      save numstor,storused,reuseOneShot,cache_mode
         common/flfst/flfirst,jsim
       logical depOK,useMOMD
       integer modtd,iflvar,filenprm
@@ -143,7 +146,23 @@ ctemp        if (Kcontrol.ne.2) call xpack(2,itemp,xfit)
 c
         if (flfirst) then
 c  using the disc has removed        
-           disctrid=.false. 
+           disctrid=.false.
+           cache_mode=0
+           if (.not.minpack_fit) then
+              cache_mode=1
+              call get_environment_variable('ODFR4_ORIENTATION_CACHE',
+     #             cache_option,status=env_status)
+              if (env_status.eq.0) then
+                 select case (cache_option)
+                 case ('0')
+                    cache_mode=0
+                 case ('stats')
+                    cache_mode=2
+                 case ('full')
+                    cache_mode=3
+                 end select
+              endif
+           endif
 c   Number of independent orientation functions:            
            numODFs=0
 
@@ -334,7 +353,10 @@ cdb             icalc=FULL
 c             
              call momdls( fparms(1,isi,isp),iparms(1,isi,isp),icalc,
      #              resSp,nft(isp),isi,isp,numstor,tmpNams,
-     #              DiscTrid,ierr )
+     #              DiscTrid,ierr,cache_mode,reuseOneShot,
+     #              isi.eq.1.and..not.any(nnsite(:isp-1).gt.0),
+     #              isi.eq.nnsite(isp).and.
+     #              .not.any(nnsite(isp+1:nspc).gt.0) )
 c
              do jpt=1,npts(isp)
                   ClSpecDat(jpt,isp,isi+1)=resSp(jpt)
@@ -517,7 +539,7 @@ c
 
                  call momdls( fparms(1,isi,isp),iparms(1,isi,isp),icalc,
      #                    resSp,nft(isp),isi,isp,numstor,tmpNams,
-     #                    DiscTrid,ierr )
+     #                    DiscTrid,ierr,0,.false.,.false.,.false. )
                   modtd(isi,isp)=0
                   
                   do jpt=1,npts(isp)

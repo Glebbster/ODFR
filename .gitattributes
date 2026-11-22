@@ -11,3 +11,6 @@ Makefile text eol=lf
 examples/ODFR_Tests/** -text
 *.pdf binary
 *.in text eol=lf
+
+# Preserve the exact bytes of the public manual calculation decks.
+tests/manual-experiments/*/** -text

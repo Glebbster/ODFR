@@ -13,7 +13,8 @@ c
       integer mord
       integer isi,ntemp,ntemp1,jord,mtemp,i,j
       double precision ordP1(Jmax,Jmax),ordP2(Jmax,Jmax)
-      character*30 FileName, Astring 
+      character(*) FileName
+      character*30 Astring
       character*1  NamTmp      
 c
       DOUBLE PRECISION fparms(NFPRM,MXSITE,MXSPC),Cptl,fNrm
@@ -213,7 +214,7 @@ c Macro
   	    if (keyODF(isi).eq.0) then 
             write(NamTmp,106)isi
 106         FORMAT (I1)
-            call open_output(4,'G'//NamTmp//FileName)
+            call open_output(4,'G'//NamTmp//trim(FileName))
             write(4,110) ordP2(1,1)*ordP1(1,1)            
               do jord=2,Jmx(isi),2
                    ntemp=1+jord/2
@@ -252,7 +253,7 @@ c Mixed
 c Macro      
   	    if (keyODF(isi).eq.0) then 
             write(NamTmp,106)isi
-            call open_output(4,'G'//NamTmp//FileName)
+            call open_output(4,'G'//NamTmp//trim(FileName))
             write(4,110) ordP2(1,1)*ordP1(1,1) 
             do jord=2,Jmx(isi),2
                    ntemp=1+jord/2

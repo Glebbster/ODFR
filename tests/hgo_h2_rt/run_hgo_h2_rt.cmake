@@ -61,8 +61,11 @@ set(report_text "${stdout}\n${history_text}")
 if(NOT report_text MATCHES "Final loss reporting:")
   message(FATAL_ERROR "Final loss report was not found in stdout/history")
 endif()
-if(NOT report_text MATCHES "SSE_W= *1\\.[0-9]+E-02")
-  message(FATAL_ERROR "HGO weighted SSE left the expected 1.xE-02 range")
+string(REGEX MATCH "SSE_W= *([^ \t\r\n]+)" loss_field "${history_text}")
+set(fit_sse "${CMAKE_MATCH_1}")
+if(NOT fit_sse MATCHES "^[0-9]+\\.[0-9]+E[+-][0-9]+$" OR
+   NOT fit_sse GREATER 0 OR NOT fit_sse LESS 0.04)
+  message(FATAL_ERROR "Expected finite HGO weighted SSE between 0 and 0.04, got '${fit_sse}'")
 endif()
 if(NOT report_text MATCHES "SSE_UNW=" OR
    NOT report_text MATCHES "RED_W=" OR

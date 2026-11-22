@@ -1,6 +1,6 @@
 # Weights and optimization steps / Веса и шаги подбора
 
-[Architecture / Архитектура](ARCHITECTURE.md) · [Manual / Мануал](ODF_manual4_3.pdf)
+[Architecture / Архитектура](ARCHITECTURE.md) · [Manual / Мануал](ODF_manual4_3.pdf) · [NAM paths / Пути в NAM](INPUT_OUTPUT.md) · [Orientation cache / Кеш ориентаций](ORIENTATION_CACHE.md)
 
 ## Русский
 

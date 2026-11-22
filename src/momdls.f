@@ -18,7 +18,10 @@ c       algorithm.
 c*********************************************************************
 c
       subroutine momdls(fparm,iparm,icalc,spectr,nft,jsite,jsp,
-     #                  numstor,tmpNams,DiscTrid,ierr)
+     #                  numstor,tmpNams,DiscTrid,ierr,cache_mode,
+     #                  reuseOneShot,first_site,last_site)
+      use, intrinsic :: iso_fortran_env, only: int64
+      use, intrinsic :: ieee_arithmetic, only: ieee_is_finite
       implicit none
       include 'mpif.h'
       include 'mpi_state.inc'
@@ -47,7 +50,25 @@ c
 c
       integer i,iort,id,j,nstp,nevl,jstore,iort_start,iort_step
       double precision cospsi,cosxi,delcos,dnorm,dwt,onorm,sinxi
-      logical Full,DiscTrid
+      logical Full,DiscTrid,reuseOneShot,first_site,last_site
+      integer cache_mode
+c Each entry holds unweighted spectra for one calculator on this rank.
+c CG indices refer to the existing slots during fitting and to saved
+c coefficient prefixes when one-shot resets those slots each spectrum.
+      type orientation_cache_entry
+         integer(int64) real_key(NFPRM),field_shift_key
+         integer int_key(NIPRM),fft_size
+         double precision, allocatable :: spectra(:,:)
+         integer cg_index(MAXNORT),cg_length(MAXNORT)
+      end type
+      type(orientation_cache_entry), save :: cache(MXSITE*MXSPC)
+      integer, save :: entry_count,owner(MAXStorMat)
+      integer, save :: full_count,hit_count
+c At most 32 MiB per rank in addition to the saved spectra.
+      integer, parameter :: max_saved_coefficients=1024*1024
+      double complex, allocatable, save :: saved_coefficients(:,:)
+      integer, save :: coefficients_used
+      integer current_entry,nmatch,matches(MXSITE*MXSPC),local_count
 c
       double precision ZERO,ONE,SMALL,D180,acc
       parameter(ZERO=0.0D0,ONE=1.0D0,SMALL=1.0D-16,D180=180.0D0,
@@ -68,6 +89,14 @@ cdb       integer flagname
 c#####################################################################
 c
       Full = mod(icalc,1000)/100 .ne. 0
+      current_entry=0
+      if (first_site) then
+         entry_count=0
+         owner=0
+         coefficients_used=0
+         full_count=0
+         hit_count=0
+      endif
 c     ----------------------------------------------
 c     Load values from parameter array into /eprprm/
 c     ----------------------------------------------
@@ -102,13 +131,12 @@ c       --------------------------
 c       --- Single orientation ---
 c       --------------------------
          if ((.not.mpi_enabled).or.(mpi_rank.eq.0)) then
-            call eprls(icalc,jsite,store1(1,jstore),store2(1,jstore),
-     #	              local_spectr,nft,nstp,zndone(jstore),ierr)
+            call evaluate_orientation(1,local_spectr)
             if (ierr.ge.FATAL) then
                if (mpi_rank.eq.0) write(*,*) ' eprls gives FATAL error'
                if (mpi_enabled) call MPI_ABORT(MPI_COMM_WORLD,ierr,
      #              mpi_ierr)
-               stop
+               stop 1
             endif
          endif
          if (mpi_enabled) then
@@ -160,6 +188,9 @@ c
             iort_step=mpi_size
          endif
 c
+         if ((cache_mode.eq.1.or.cache_mode.eq.2).and.Full.and.
+     #       iort_start.le.nort) call find_matching_calculators()
+
          do iort=iort_start,nort,iort_step
            if (mpi_enabled) then
               cospsi=min(dfloat(iort-1)*delcos,ONE)
@@ -169,15 +200,13 @@ c
            psiFr=dacos(cospsi)
            fepr(IPSI)=psiFr/RADIAN
 c
-             call eprls(icalc,jsite,store1(1,jstore+iort-1),
-     #	             store2(1,jstore+iort-1),work,nft,nstp,
-     #               zndone(jstore+iort-1),ierr)
+           call evaluate_orientation(iort,work)
 c
             if (ierr.ge.FATAL) then 
                if (mpi_rank.eq.0) write(*,*) ' eprls gives FATAL error'
                if (mpi_enabled) call MPI_ABORT(MPI_COMM_WORLD,ierr,
      #              mpi_ierr)
-               stop
+               stop 1
             endif
 c           --------------------------------------------------
 c           If there is ordering of the director, calculate the
@@ -250,8 +279,155 @@ c        Return total number of steps actually taken
 c        -------------------------------------------
       end if !(nort.le.1
 c
-      continue
+      if (last_site.and.(cache_mode.eq.2.or.cache_mode.eq.3)) then
+         write(*,'(A,I0,A,I0,A,I0,A,I0)') 'ORIENTATION_CACHE rank=',
+     #        mpi_rank,' full=',full_count,' cfonly=',0,
+     #        ' spectra=',hit_count
+      endif
       return
+
+      contains
+
+      subroutine find_matching_calculators()
+      double precision local_inputs(NFPRM)
+      integer local_options(NIPRM),entry
+      integer(int64) real_key(NFPRM),field_shift_key
+
+c PSI becomes the local angle before EPRLS. DC20 and AMPFAC act on
+c its result. ITYPESITE controls coefficient storage.
+c All other prepared parameters must agree, including field and basis.
+      local_inputs=fparm
+      local_inputs(IPSI)=ZERO
+      local_inputs(IDC20)=ZERO
+      local_inputs(IAMPFAC)=ZERO
+      if (.not.all(ieee_is_finite(local_inputs)).or.
+     #    .not.ieee_is_finite(fldShftSite(jsite))) return
+      local_options=iparm
+      local_options(IItypeSite)=0
+      real_key=transfer(local_inputs,0_int64,NFPRM)
+      field_shift_key=transfer(fldShftSite(jsite),0_int64)
+      nmatch=0
+      do entry=1,entry_count
+         if (all(cache(entry)%int_key.eq.local_options).and.
+     #       all(cache(entry)%real_key.eq.real_key).and.
+     #       cache(entry)%field_shift_key.eq.field_shift_key.and.
+     #       cache(entry)%fft_size.eq.nft) then
+            nmatch=nmatch+1
+            matches(nmatch)=entry
+         endif
+      enddo
+      entry_count=entry_count+1
+      current_entry=entry_count
+      local_count=1+(nort-iort_start)/iort_step
+      cache(current_entry)%real_key=real_key
+      cache(current_entry)%int_key=local_options
+      cache(current_entry)%field_shift_key=field_shift_key
+      cache(current_entry)%fft_size=nft
+      cache(current_entry)%cg_index=0
+      end subroutine find_matching_calculators
+
+      subroutine evaluate_orientation(orientation,values)
+      integer orientation,slot
+      double precision values(MXSPT)
+
+      slot=jstore+orientation-1
+      call calculate_orientation(orientation,slot,store1(1,slot),
+     #     store2(1,slot),zndone(slot),values)
+      end subroutine evaluate_orientation
+
+      subroutine calculate_orientation(orientation,slot,al,be,steps,values)
+      integer orientation,slot,steps
+      double complex al(MXDIM),be(MXDIM)
+      double precision values(MXSPT)
+      integer entry,src,src_index,match
+      integer local_index,alloc_status,cg_index
+
+      src=0
+      if (current_entry.ne.0) then
+         do match=1,nmatch
+            entry=matches(match)
+            src_index=cache(entry)%cg_index(orientation)
+            if (src_index.eq.0) cycle
+            if (.not.reuseOneShot) then
+               if (owner(src_index).ne.cache_stamp(entry,orientation)) cycle
+            endif
+            src=entry
+            exit
+         enddo
+      endif
+
+      if (src.ne.0) then
+         local_index=1+(orientation-iort_start)/iort_step
+         values(1:nfld)=cache(src)%spectra(:,local_index)
+         ierr=0
+         call restore_coefficients(src,orientation,slot,al,be,steps)
+         if (.not.reuseOneShot) owner(slot)=cache_stamp(src,orientation)
+         hit_count=hit_count+1
+         return
+      endif
+
+      call eprls(icalc,jsite,al,be,values,nft,nstp,steps,ierr)
+      full_count=full_count+1
+
+      if (Full.and..not.reuseOneShot) owner(slot)=0
+      if (current_entry.eq.0) return
+      if (ierr.ne.0) return
+      if (.not.all(ieee_is_finite(values(1:nfld)))) return
+      cg_index=slot
+      if (reuseOneShot) then
+         if (coefficients_used+steps.gt.max_saved_coefficients) return
+         if (.not.allocated(saved_coefficients)) then
+            allocate(saved_coefficients(max_saved_coefficients,2),
+     #               stat=alloc_status)
+            if (alloc_status.ne.0) return
+         endif
+         cg_index=coefficients_used+1
+      endif
+      if (allocated(cache(current_entry)%spectra)) then
+         if (size(cache(current_entry)%spectra,1).ne.nfld.or.
+     #       size(cache(current_entry)%spectra,2).ne.local_count)
+     #       deallocate(cache(current_entry)%spectra)
+      endif
+      if (.not.allocated(cache(current_entry)%spectra)) then
+         allocate(cache(current_entry)%spectra(nfld,local_count),
+     #            stat=alloc_status)
+         if (alloc_status.ne.0) return
+      endif
+      local_index=1+(orientation-iort_start)/iort_step
+      cache(current_entry)%spectra(:,local_index)=values(1:nfld)
+      cache(current_entry)%cg_index(orientation)=cg_index
+      cache(current_entry)%cg_length(orientation)=steps
+      if (reuseOneShot) then
+         coefficients_used=coefficients_used+steps
+         saved_coefficients(cg_index:coefficients_used,1)=al(1:steps)
+         saved_coefficients(cg_index:coefficients_used,2)=be(1:steps)
+      else
+         owner(slot)=cache_stamp(current_entry,orientation)
+      endif
+      end subroutine calculate_orientation
+
+      subroutine restore_coefficients(entry,orientation,slot,al,be,steps)
+      integer entry,orientation,slot,steps
+      double complex al(MXDIM),be(MXDIM)
+      integer cg_index,cg_end
+
+      cg_index=cache(entry)%cg_index(orientation)
+      steps=cache(entry)%cg_length(orientation)
+      if (reuseOneShot) then
+c Preserve the writes FULL would make for linked sites and later jobs.
+         cg_end=cg_index+steps-1
+         al(1:steps)=saved_coefficients(cg_index:cg_end,1)
+         be(1:steps)=saved_coefficients(cg_index:cg_end,2)
+      else if (slot.ne.cg_index) then
+         al(1:steps)=store1(1:steps,cg_index)
+         be(1:steps)=store2(1:steps,cg_index)
+      endif
+      end subroutine restore_coefficients
+
+      integer function cache_stamp(entry,orientation)
+      integer entry,orientation
+      cache_stamp=(entry-1)*MAXNORT+orientation
+      end function cache_stamp
       end
 
 c                         function FU20

@@ -33,7 +33,8 @@ c
 c      	 
          common /control/Kcontrol
 c
-	character*30 str1,NAME
+	character*30 str1
+	character(*) NAME
       integer jfile, jpar,ICON,ISTRING
       double precision parReserved,temp1,temp2,temp3,fldf
 c
@@ -73,9 +74,9 @@ c
          if (mpi_rank.eq.0) OPEN ( UNIT=2,FILE='history',
      #                              POSITION='APPEND')
          if (mpi_rank.eq.0) write(2,*)
-     #      ' File - ',NAME,' is missing or cannot be opened'
+     #      ' File - ',trim(NAME),' is missing or cannot be opened'
          if (mpi_rank.eq.0) write(*,*)
-     #      ' File - ',NAME,' is missing or cannot be opened'
+     #      ' File - ',trim(NAME),' is missing or cannot be opened'
          if (mpi_rank.eq.0) CLOSE ( UNIT=2)
          goto 37
       endif
@@ -92,9 +93,9 @@ c
                if (mpi_rank.eq.0) OPEN ( UNIT=2,FILE='history',
      #                                    POSITION='APPEND')
           if (mpi_rank.eq.0) write(2,*)
-     #       ' File - ',NAME,' is missing or wrong in first line'
+     #       ' File - ',trim(NAME),' is missing or wrong in first line'
           if (mpi_rank.eq.0) write(*,*)
-     #       ' File - ',NAME,' is missing or wrong in first line'
+     #       ' File - ',trim(NAME),' is missing or wrong in first line'
                if (mpi_rank.eq.0) CLOSE ( UNIT=2)
   	         CLOSE (UNIT=1)
                goto 37
@@ -384,7 +385,7 @@ c----------------------------------------------------------------------
       end if
 
   36   if (ICON.NE.0) then
-    	 write(*,*)'Error in line No',ISTRING,' in file - ',NAME
+       write(*,*)'Error in line No',ISTRING,' in file - ',trim(NAME)
        goto 37       
 	 end if
   	         CLOSE (UNIT=1)
@@ -750,9 +751,9 @@ cc  the parameters for second and other files is taken from the first one.
 37	FileErr=.true.
       if (mpi_rank.eq.0) OPEN ( UNIT=2,FILE='history',
      #                           POSITION='APPEND')
-      if (mpi_rank.eq.0) WRITE (2,*)  'FILE - ',NAME,
+      if (mpi_rank.eq.0) WRITE (2,*)  'FILE - ',trim(NAME),
      #                                'SHOULD BE IMPROVED'
-      if (mpi_rank.eq.0) WRITE (*,*)  'FILE - ',NAME,
+      if (mpi_rank.eq.0) WRITE (*,*)  'FILE - ',trim(NAME),
      #                                'SHOULD BE IMPROVED'
       if (mpi_rank.eq.0) CLOSE ( UNIT=2)
  	 return

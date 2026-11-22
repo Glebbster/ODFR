@@ -8,7 +8,8 @@ c       subroutine read the experimental spectrum
       include 'mpi_state.inc'
 
 	 Logical FileErr
-	 character*30 nametemp,STR
+	 character(MaxPath) nametemp
+	 character*30 STR
        integer NptsExp
        integer keySp(MXSPC,2)
        integer jSim,numSpec
@@ -77,9 +78,9 @@ c
  30       FileErr=.true.
           if (mpi_rank.eq.0) OPEN ( UNIT=2,FILE='history',
      #                              POSITION='APPEND')
-          if (mpi_rank.eq.0) write(2,*)' FILE ',nametemp,
+          if (mpi_rank.eq.0) write(2,*)' FILE ',trim(nametemp),
      #       ' NOT FOUND OR NOT PREPARED PROPERLY!'
-          if (mpi_rank.eq.0) write(*,*)' FILE ',nametemp,
+          if (mpi_rank.eq.0) write(*,*)' FILE ',trim(nametemp),
      #       ' NOT FOUND OR NOT PREPARED PROPERLY!'
           if (mpi_rank.eq.0) CLOSE ( UNIT=2)
 c
