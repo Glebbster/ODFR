@@ -2,6 +2,10 @@
 
 [Русский](CHANGELOG_RU.md)
 
+## Unreleased
+
+- NL2SOL reuses local orientation spectra between evaluations of the same fit. When only Gaussian broadening or field shift changes, it reuses the completed CSCG coefficients and recalculates the line shape. [Cache modes](docs/ORIENTATION_CACHE.md)
+
 ## 5.1.0
 
 - Reuse eligible local orientation spectra within a single model evaluation, before applying macroscopic ODF weights. This reduces repeated work in one-shot calculations and NL2SOL. MINPACK retains its existing explicit Jacobian calculation. See [cache modes](docs/ORIENTATION_CACHE.md).

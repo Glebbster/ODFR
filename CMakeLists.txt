@@ -195,29 +195,34 @@ if(BUILD_TESTING)
         ${MPIEXEC_PREFLAGS} "$<TARGET_FILE:ODFR4_3_mpi>" ${MPIEXEC_POSTFLAGS})
     endif()
 
-    if(ODFR4_BUILD_SERIAL)
-      add_test(NAME orientation_cache_serial
+    function(odfr4_add_cache_tests suffix mode ranks)
+      add_test(NAME "orientation_cache_${suffix}"
         COMMAND "${Python3_EXECUTABLE}"
           "${CMAKE_CURRENT_SOURCE_DIR}/tests/orientation_cache/check_cache.py"
           "${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/smoke/input"
-          "$<TARGET_FILE:ODFR4_3_serial>"
+          ${ARGN}
       )
-      set_tests_properties(orientation_cache_serial PROPERTIES
-        LABELS "regression;orientation_cache;serial" TIMEOUT 90
+      set_tests_properties("orientation_cache_${suffix}" PROPERTIES
+        LABELS "regression;orientation_cache;${mode}" PROCESSORS "${ranks}" TIMEOUT 90
       )
-    endif()
+      add_test(NAME "orientation_cross_call_${suffix}"
+        COMMAND "${Python3_EXECUTABLE}"
+          "${CMAKE_CURRENT_SOURCE_DIR}/tests/orientation_cache/check_cross_call.py"
+          "${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/smoke/input"
+          "${ranks}" ${ARGN}
+      )
+      set_tests_properties("orientation_cross_call_${suffix}" PROPERTIES
+        LABELS "regression;orientation_cache;${mode}" PROCESSORS "${ranks}" TIMEOUT 300
+      )
+    endfunction()
 
+    if(ODFR4_BUILD_SERIAL)
+      odfr4_add_cache_tests(serial serial 1 "$<TARGET_FILE:ODFR4_3_serial>")
+    endif()
     if(ODFR4_BUILD_MPI)
-      add_test(NAME orientation_cache_mpi_2
-        COMMAND "${Python3_EXECUTABLE}"
-          "${CMAKE_CURRENT_SOURCE_DIR}/tests/orientation_cache/check_cache.py"
-          "${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/smoke/input"
-          "${MPIEXEC_EXECUTABLE}" "${MPIEXEC_NUMPROC_FLAG}" 2
-          ${MPIEXEC_PREFLAGS} "$<TARGET_FILE:ODFR4_3_mpi>" ${MPIEXEC_POSTFLAGS}
-      )
-      set_tests_properties(orientation_cache_mpi_2 PROPERTIES
-        LABELS "regression;orientation_cache;mpi" PROCESSORS 2 TIMEOUT 90
-      )
+      odfr4_add_cache_tests(mpi_2 mpi 2
+        "${MPIEXEC_EXECUTABLE}" "${MPIEXEC_NUMPROC_FLAG}" 2
+        ${MPIEXEC_PREFLAGS} "$<TARGET_FILE:ODFR4_3_mpi>" ${MPIEXEC_POSTFLAGS})
     endif()
   endif()
 
