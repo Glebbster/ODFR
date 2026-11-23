@@ -1,59 +1,46 @@
-# Manual spectrum examples
+# Membrane EPR examples
 
-Each example uses the saved parameters from iteration 6 for one forward
-calculation with two sites. Nominal angles are 0, 10, 20, 30, 40, 50, 60,
-70, 80, 90, 125, 145, 165 and 180 degrees.
+These examples simulate how electron paramagnetic resonance (EPR) spectra of
+membrane samples vary with orientation. The datasets come from an unpublished
+manuscript. The DOI will be added after publication.
 
-| Directory | Dataset | Point weights | Saved psi offset (degrees) |
-| --- | --- | --- | ---: |
-| `iso-fl-rt-unweighted-fixed-23p4` | ISO FL at 25 deg C, local C20 = 23.4 at both sites | None | -2.617706 |
-| `lc-fl-weighted-psi-it6` | LC FL at 25 deg C, weighted psi fit | `weight` | -5.329084 |
-| `lc-p-weighted-psi-it6` | LC P at 25 deg C, weighted psi fit | `weight` | -0.374605 |
+| Example directory | Membrane preparation | Spectral point weights |
+| --- | --- | --- |
+| `lc-fl-weighted` | Filtration from the liquid-crystalline phase (LC-FL) | Included |
+| `lc-p-weighted` | Liquid-crystalline membrane prepared under pressure (LC-P) | Included |
+| `iso-fl-rt-unweighted-fixed-23p4` | Filtration from the isotropic phase (ISO-FL) | None |
 
-Copy one complete example directory to a fresh writable location. Keep
-`namODFR.nam`, `data/`, `params/`, `odf.par`, `outputs/` and, where present,
-`weight` together. The source data are the denoised experimental ESR files
-used for the fit.
+Each run calculates spectra for 14 sample orientations without fitting.
+The macroscopic orientational distribution in `odf.par` uses terms through
+order 8.
 
-On Windows, open a terminal in the copy and use the absolute path to your
-executable. For example:
+## Run an example
 
-```powershell
-Set-Location 'C:\work\iso-fl-rt-unweighted-fixed-23p4'
-& 'C:\apps\ODFR\bin\ODFR5_serial.exe'
-```
+1. Copy the entire example directory to a writable location.
+2. Open PowerShell and run the ODFR executable from inside that copy, where `namODFR.nam`
+   is located. Adjust both paths for your installation and example.
 
-For an MPI build, use its matching MPI launcher. With Microsoft MPI:
+   ```powershell
+   Set-Location 'C:\work\lc-fl-weighted'
+   & 'C:\apps\ODFR\bin\ODFR5_serial.exe'
+   ```
+
+For the Windows MPI build, use its matching launcher from the example folder.
+With Microsoft MPI:
 
 ```powershell
 & 'C:\Program Files\Microsoft MPI\Bin\mpiexec.exe' -n 2 'C:\apps\ODFR\bin\ODFR5_mpi.exe'
 ```
 
-On macOS or Linux, use the executable path without the `.exe` extension.
-Run from the same example directory.
+On macOS or Linux, run the built executable from the same directory using
+its absolute path without the `.exe` extension.
 
-The program reads `namODFR.nam` from the current directory. The
-`Kcontrol=2` in the first PAR selects a single forward calculation with
-zero fitted variables. The input fit flags are retained. The program reads
-the experimental spectra for the loss report. The LC examples use the
-included point weights and the experimental noise setting in the PAR
-files. The `weight` file contains 1,024 entries per spectrum in NAM order.
-The ISO example has point weighting and the ODF penalty disabled.
+## View the spectra
 
-A successful run marks the simulation `Finished` in `history`, reports
-`N_TOTAL=14336` and `NPRM=0`, and produces 14 DAT and 14 PAR files in
-`outputs/`. It also writes `outputs/odf.par`,
-`G1outputs/odf.par` and `G2outputs/odf.par`. Use the loss report in
-`history` or the DAT headers to compare results.
+Check `history` for `Finished`. Open a text file such as `outputs/000.dat`
+and plot the two spectra as separate XY series using a spreadsheet or a
+plotting tool. The DAT filenames indicate the nominal sample angles in
+degrees.
 
-All three examples use a model field grid of 3302 to 3462 G with 1,024
-points per spectrum. The values below are approximate.
-
-| Dataset | Expected total SSE_W |
-| --- | ---: |
-| ISO FL | 0.0000944297 |
-| LC FL | 0.0461690 |
-| LC P | 0.0300660 |
-
-For ISO FL, SSE_W equals SSE_UNW. For each LC example, check that the
-log also reports `Weights OK, ndatot = 14336`.
+Use `Hexp` and `Sexp` for the experimental curve and `Hmod` and `Smod` for
+the total model curve. Each curve has its own magnetic-field column.

@@ -1,0 +1,15 @@
+   1    1 - axial ODF, 2 -frozen ODF,                                                                             3 - orthorhombic to nonrhombic, 4 -reverse
+             1     1.000      10000 PenFlg, Penalty coef., Net for ODF integration
+ ODF parameters for site 1
+           8           0    (order, keyODF)
+ An0          Fl An2          Fl An4          Fl An6          Fl An8          Fl
+   1.0000      0
+   3.0272      1   0.0000      0
+   2.5626      1   0.0000      0   0.0000      0
+   1.6174      1   0.0000      0   0.0000      0   0.0000      0
+  0.65973      1   0.0000      0   0.0000      0   0.0000      0   0.0000      0
+ ODF parameters for site 2
+           2           0    (order, keyODF)
+ An0          Fl An2          Fl An4          Fl An6          Fl An8          Fl
+   1.0000      0
+   2.0071      1   0.0000      0
