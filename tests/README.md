@@ -1,6 +1,6 @@
 # Build and regression tests / Проверки сборки
 
-Build all configured targets, then run `ctest --test-dir out/windows-mpi --output-on-failure` with your build directory. With Python 3 and both serial and MPI enabled, CTest registers 16 default tests. Configure with `-DODFR4_TEST_STABILITY=ON` to add the serial and two-rank ten-job tests. Run all tests to include the CSCG and observer tests outside the serial and MPI labels.
+Build all configured targets, then run `ctest --test-dir out/windows-mpi --output-on-failure` with your build directory. With Python 3 and both serial and MPI enabled, CTest registers 18 default tests. Configure with `-DODFR4_TEST_STABILITY=ON` to add the serial and two-rank ten-job tests. Run all tests to include the CSCG and observer tests outside the serial and MPI labels.
 
 The observer test checks recording off by default (unset, empty, invalid and zero settings), explicit opt-in, accepted-state and rollback handling, trajectory preservation and output failure. [Manual-experiment examples](manual-experiments/README.md) are run separately on writable copies.
 
@@ -14,7 +14,8 @@ The observer test checks recording off by default (unset, empty, invalid and zer
 |---|---|---|
 | Запуск из папки расчёта по `namODFR.nam` | `smoke_*` и `hgo_h2_rt_*` запускают программу на копиях входов и проверяют основные файлы результата. `user_long_paths_*` проверяет длинные имена, кавычки и продолжение записи на следующей строке | Сообщения о недостающих и повреждённых входных файлах |
 | Расчёт спектров с заданными параметрами | `user_batch_*` сверяет пакет из 14 спектров и второй расчёт в том же процессе с одиночными результатами. Проверяются суммарный спектр и вклады двух центров | Сохранённые численные эталоны для отдельных режимов MOMD, ODF и их смешения |
-| Подбор параметров NL2SOL | `hgo_h2_rt_*` проверяет выходные PAR/DAT, отчёт об ошибке и диапазон SSE для HGO | Эталон восстановленных параметров и отдельные сценарии остановки. Подбор MINPACK требует собственной проверки |
+| Подбор параметров | `hgo_h2_rt_*` проверяет выходные PAR/DAT, отчёт об ошибке и диапазон SSE для NL2SOL на HGO. `orientation_cross_call_*` сравнивает выходы MINPACK при разных настройках кэша | Эталон восстановленных параметров и отдельные сценарии остановки |
+| Кэш ориентаций | `orientation_cache_*` проверяет одноразовый расчёт со связанными сайтами. `orientation_cross_call_*` проверяет пробы Якобиана NL2SOL для гауссовой ширины, диффузии и ODF, очистку между задачами и побайтное совпадение спектров, параметров и кадров оптимизации с `FULL` | Проверка вытеснения записей при достижении лимита памяти |
 | Веса и отчёт об ошибке | `smoke_*` проверяет чтение 512 весов, поля взвешенной и невзвешенной SSE и отчёт по спектрам | Проверить сами значения на известной невязке, влияние отдельных весов и обработку ошибочного файла |
 | Запись ODF и коэффициентов G1/G2 | `user_output_paths_*` проверяет вложенный путь с пробелом, повторный запуск и две ошибки записи. Содержимое сравнивается с выходами в текущей папке | Сохранение и повторное чтение ODF разных типов, физический смысл macro и действие штрафа |
 | Запуск с MPI | `*_mpi_2` повторяет пользовательские расчёты на двух процессах | Прямое сравнение результатов с serial и раскладка ориентаций при другом числе процессов |
