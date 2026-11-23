@@ -60,7 +60,7 @@ c
       double complex al(MXDIM),be(MXDIM)
       double complex stv(MXDIM),y(MXDIM)
 
-      logical matrix,start
+      logical matrix,start,spectrum_ok
 c
       double precision cgerr,wline,gib
       integer i,nstp,iadd
@@ -127,7 +127,11 @@ c     ---------------------------------------------
 cAXV Shifting of the calculated spectrum
       fldiShifted=b0-fldi+SpcShift+fldShftSite(jsite)
       call cfs( al,be,ndone,fldiShifted,-dfld,nfld,w0+lbl,ideriv,phase,
-     #          spectr )
+     #          spectr,spectrum_ok )
+      if (.not.spectrum_ok) then
+         ierr=CGHLT
+         return
+      endif
 c
 c     ------------------------------------
 c     Convolution with Gaussian lineshape

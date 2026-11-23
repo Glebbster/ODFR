@@ -62,10 +62,12 @@ c
       common /resSpn/resSpn(MXSPT)     
 c	
        character*30, PARAMETER :: programName='ODFR5' 
-       character*30, PARAMETER :: nameNames='namODFR.nam'
+       character(*), PARAMETER :: nameNames='namODFR.nam'
 c	  
        integer   JVAR,Kcontrol
        common /control/Kcontrol
+      logical minpack_fit
+      common /fit_method/ minpack_fit
       logical flfirst
       common/flfst/flfirst,jsim
       double precision   DndatNprm     
@@ -111,15 +113,18 @@ c
  102   format(1x,'Simulation ',1x,I2,':' )
  103   format(1x,A,' version ',A)
 c
-       if (mpi_rank.eq.0) WRITE(2,100) ParInpODF(jSim),
-     #                    ParResODF(jSim)
- 100       format(1x,A12,1x,A12)
+       if (mpi_rank.eq.0) WRITE(2,100)
+     #      ParInpODF(jSim)(:max(12,len_trim(ParInpODF(jSim)))),
+     #      ParResODF(jSim)(:max(12,len_trim(ParResODF(jSim))))
+ 100       format(1x,A,1x,A)
        DO isp=1,nspc
-         if (mpi_rank.eq.0) WRITE(2,101) ParInpEPR(isp,jSim),
-     * ParResEPR(isp,jSim),
-     * NamSpecInp(isp,jSim),NamSpecRes(isp,jSim)
+         if (mpi_rank.eq.0) WRITE(2,101)
+     *      ParInpEPR(isp,jSim)(:max(20,len_trim(ParInpEPR(isp,jSim)))),
+     *      ParResEPR(isp,jSim)(:max(20,len_trim(ParResEPR(isp,jSim)))),
+     *      NamSpecInp(isp,jSim)(:max(20,len_trim(NamSpecInp(isp,jSim)))),
+     *      NamSpecRes(isp,jSim)(:max(20,len_trim(NamSpecRes(isp,jSim))))
        END DO	!isp
- 101       format(1x,'files : ',4(A20,1x),F6.2)
+ 101       format(1x,'files : ',4(A,1x))
 c
        FileErr=.False.
        if (mpi_rank.eq.0) CLOSE ( UNIT=2)
@@ -216,6 +221,7 @@ c
 c 
       DndatNprm=dfloat(ndatot-nprm)
       info=0
+      minpack_fit=nprm.gt.0 .and. Kcontrol.ne.3
       if (nprm.eq.0) then
           call lfun(0,0,xfit,fvec,fvecPure,fjac,0,1) !fresh reporting pass
           call lfun(0,0,xfit,fvec,fvecPure,fjac,0,3)

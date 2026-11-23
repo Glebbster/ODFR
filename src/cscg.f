@@ -159,7 +159,11 @@ c----------------------------------------------------------------------
 c
       error=sqrt(abs(rho1))
 c
-      if (error.lt.cgtol) go to 200
+      if (error.lt.cgtol) then
+c The diagonal coefficient for this iteration has not been computed.
+         nstep=nstep-1
+         go to 200
+      endif
 c
 c----------------------------------------------------------------------
 c     update p  ( p <- r+beta*p )
@@ -204,13 +208,13 @@ c     end of loop over CG steps
 c======================================================================
 c
       if (nstep.lt.mxcgs) go to 100
+
 c
 c----------------------------------------------------------------------
 c     construct Lanczos tridiagonal matrix from CG quantities
 c----------------------------------------------------------------------
 c
  200  continue 
-ctemp     al(nstep)=CZERO   !AXV
 c
       call cgltri(nstep,al,bl,dreal(shift),dimag(shift))
 c

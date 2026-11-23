@@ -9,7 +9,8 @@ c
       integer JTMP,ICON,js,ntemp,ntemp1,jord,jpar,ISTRING
       double precision tempparODF(Jmax)
       integer tempflODF(Jmax)
-      character*30 FileName, Astring 
+      character(*) FileName
+      character*30 Astring
 c
       ISTRING=0
       ICON=0
@@ -131,9 +132,9 @@ c
       endif  !ODFtype(1).eq.2 or 3
 c
   36    if (ICON.NE.0) then
-           write(*,*)'File ',FileNAME
+           write(*,*)'File ',trim(FileNAME)
            write(*,*)' - Error in line No',ISTRING,', js=',js  
-           write(2,*)'File ',FileNAME
+           write(2,*)'File ',trim(FileNAME)
            write(2,*)' - Error in line No',ISTRING,', js=',js         
            if ((js.ge.1).and.(js.le.MXSITE)) then
              if ((Jmx(js).lt.0).or.(Jmx(js).gt.Jmax)) then

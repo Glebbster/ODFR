@@ -1,19 +1,87 @@
 # Build and regression tests / Проверки сборки
 
-Build all targets, then run `ctest --test-dir out/windows-mpi --output-on-failure` (substitute your build directory). CMake must find Python 3 to enable the observer test. The expected full serial+MPI suite has five tests:
+Build all configured targets, then run `ctest --test-dir out/windows-mpi --output-on-failure` with your build directory. With Python 3 and both serial and MPI enabled, CTest registers 16 default tests. Configure with `-DODFR4_TEST_STABILITY=ON` to add the serial and two-rank ten-job tests. Run all tests to include the CSCG and observer tests outside the serial and MPI labels.
 
-| Test | Checks |
-|---|---|
-| `smoke_serial` | 512 supplied point weights, version banner, required outputs and loss-report fields |
-| `hgo_h2_rt_serial` | 1024-point HGO case, output contents/size, weighted SSE in the existing `1.xE-02` range |
-| `smoke_mpi_2` | Same smoke assertions using two MPI processes |
-| `hgo_h2_rt_mpi_2` | Same HGO assertions using two MPI processes |
-| `optimization_steps_observer` | Analytic NL2SOL case: accepted states, rollback, rejection/covariance exclusion, recording off by default (unset/0/empty/invalid), enabled by 1, identical trajectory/results in all modes and on I/O failure, preservation of an existing session |
+The observer test checks recording off by default (unset, empty, invalid and zero settings), explicit opt-in, accepted-state and rollback handling, trajectory preservation and output failure. [Manual-experiment examples](manual-experiments/README.md) are run separately on writable copies.
 
-CTest copies input datasets into the build directory. Do not point test runners at a live calculation. `ctest -L serial` and `ctest -L mpi` omit the observer test; running all tests avoids this omission. MPI tests need `mpiexec` and a working runtime. These tests verify specific behavior, not the full physical model or performance.
+## Карта проверок ODFR
 
-## Examples / Примеры
+Начальный список функций составлен по [руководству](../docs/ODF_manual4_3.pdf) и
+[форматам ввода и вывода](../docs/INPUT_OUTPUT.md). В колонке «Дальше» указано
+поведение, для которого ещё нужна отдельная воспроизводимая проверка.
 
-The ten supplied datasets are in [`examples/ODFR_Tests`](../examples/ODFR_Tests). Their historical outputs are not newly certified reference results.
+| Возможность | Что проверяем сейчас | Дальше |
+|---|---|---|
+| Запуск из папки расчёта по `namODFR.nam` | `smoke_*` и `hgo_h2_rt_*` запускают программу на копиях входов и проверяют основные файлы результата. `user_long_paths_*` проверяет длинные имена, кавычки и продолжение записи на следующей строке | Сообщения о недостающих и повреждённых входных файлах |
+| Расчёт спектров с заданными параметрами | `user_batch_*` сверяет пакет из 14 спектров и второй расчёт в том же процессе с одиночными результатами. Проверяются суммарный спектр и вклады двух центров | Сохранённые численные эталоны для отдельных режимов MOMD, ODF и их смешения |
+| Подбор параметров NL2SOL | `hgo_h2_rt_*` проверяет выходные PAR/DAT, отчёт об ошибке и диапазон SSE для HGO | Эталон восстановленных параметров и отдельные сценарии остановки. Подбор MINPACK требует собственной проверки |
+| Веса и отчёт об ошибке | `smoke_*` проверяет чтение 512 весов, поля взвешенной и невзвешенной SSE и отчёт по спектрам | Проверить сами значения на известной невязке, влияние отдельных весов и обработку ошибочного файла |
+| Запись ODF и коэффициентов G1/G2 | `user_output_paths_*` проверяет вложенный путь с пробелом, повторный запуск и две ошибки записи. Содержимое сравнивается с выходами в текущей папке | Сохранение и повторное чтение ODF разных типов, физический смысл macro и действие штрафа |
+| Запуск с MPI | `*_mpi_2` повторяет пользовательские расчёты на двух процессах | Прямое сравнение результатов с serial и раскладка ориентаций при другом числе процессов |
+| История шагов NL2SOL | `optimization_steps_observer` проверяет принятие шагов и откат на техническом примере. `optimization_steps/check_archive.py` отдельно проверяет упаковку архива | Пользовательский сценарий от включения записи в ODFR до открытия отчёта |
 
-По-русски: соберите все цели и запустите CTest командой выше. Проверяются smoke и HGO для serial/MPI и запись принятых состояний NL2SOL. Нужен Python 3; расчёты выполняются на копиях входов внутри папки сборки.
+`*` в именах обычных сценариев означает варианты `serial` и `mpi_2`.
+Эта таблица фиксирует покрытые свойства. Например, сравнение пакетного и
+одиночного расчётов проверяет независимость спектров, а для проверки физической
+модели нужны отдельные эталонные данные.
+
+## Пользовательские сценарии
+
+- **Рассчитать серию углов в одном запуске.** Подать `namODFR.nam` с 14
+  спектрами, двумя центрами и 40 ориентациями на центр, а затем с ещё одним
+  расчётом. Все спектры должны появиться и совпасть с отдельно рассчитанными
+  вариантами. Автоматизировано в `user_batch_*`.
+- **Записать результаты в новую папку и повторить запуск.** Указать
+  вложенный относительный путь. ODF и оба файла коэффициентов должны
+  появиться, а повтор должен дать те же данные. Если путь перекрыт файлом
+  или целевое имя занято каталогом, программа должна назвать проблемный путь
+  и завершиться с ошибкой. Автоматизировано в `user_output_paths_*`.
+- **Задать веса на нужных областях и проверить их влияние на подбор.**
+  Провести одинаковый подбор с единичными и заданными весами. Сверить вклад
+  контрольных точек в SSE и проверить предупреждение при неверном размере
+  файла весов. Это следующий кандидат на отдельный тест.
+- **Подобрать параметры, открыть результаты и повторить расчёт с выходными PAR.**
+  Сверить полученный спектр и отчёт. HGO покрывает сам подбор и выдачу
+  файлов. Повторное использование выходных параметров пока в CTest не проверяется.
+
+## Запуск
+
+После сборки всех включённых целей:
+
+```text
+ctest --test-dir out/local --output-on-failure
+ctest --test-dir out/local -L user --output-on-failure
+```
+
+Подставьте свой каталог сборки. Python 3 нужен для пользовательских сценариев
+и наблюдателя. MPI-сценарии добавляются при включённой MPI-сборке. Тесты создают
+отдельные временные папки внутри сборки и используют комплектные входы.
+
+## Windows и повторяемость
+
+Из каталога ODFR можно собрать и проверить serial и MS-MPI одной командой:
+
+```powershell
+.\platforms\windows\verify.ps1 -BuildDir out/windows-check -Repeat 2 -Stability
+```
+
+Команда требует CMake/CTest 3.26+, GNU Fortran, Python 3, заголовки MS-MPI
+и установленную среду Microsoft MPI. По умолчанию берётся MSYS2 MINGW64.
+Для UCRT64 передайте `-ToolchainBin C:\msys64\ucrt64\bin`. Если Python
+установлен отдельно, передайте полный путь через `-PythonExecutable`.
+
+Каждый тест должен пройти заданное число раз подряд.
+Режим `-Stability` добавляет серию из десяти заданий в одном процессе
+(`MaxCALC`). Она чередует количество спектров и допуск CG, сравнивая каждый
+результат с одиночным расчётом. Для длительной серии повторяйте этот тест
+в новых процессах. При исследовании памяти отдельно записывайте её после
+прогрева: повторяемость чисел сама по себе не измеряет утечки.
+
+Следующие проверки:
+- Прервать подбор после принятого шага. Проверить целостность кадров и повтор
+  запуска в отдельной папке из сохранённых параметров.
+- Вызвать ошибку ввода или записи в MPI. Проверить понятную причину отказа,
+  завершение всех процессов и сохранность входных файлов.
+
+Повторы CTest помогают выявить сбои между запусками. Длинная серия проверяет
+состояние внутри процесса, поэтому она нужна отдельно.

@@ -1,0 +1,17 @@
+1
+'odf.par', 'outputs/odf.par', 14
+'params/000.par', 'outputs/000.par', 'data/000.esr', 'outputs/000.dat', 2
+'params/010.par', 'outputs/010.par', 'data/010.esr', 'outputs/010.dat', 2
+'params/020.par', 'outputs/020.par', 'data/020.esr', 'outputs/020.dat', 2
+'params/030.par', 'outputs/030.par', 'data/030.esr', 'outputs/030.dat', 2
+'params/040.par', 'outputs/040.par', 'data/040.esr', 'outputs/040.dat', 2
+'params/050.par', 'outputs/050.par', 'data/050.esr', 'outputs/050.dat', 2
+'params/060.par', 'outputs/060.par', 'data/060.esr', 'outputs/060.dat', 2
+'params/070.par', 'outputs/070.par', 'data/070.esr', 'outputs/070.dat', 2
+'params/080.par', 'outputs/080.par', 'data/080.esr', 'outputs/080.dat', 2
+'params/090.par', 'outputs/090.par', 'data/090.esr', 'outputs/090.dat', 2
+'params/125.par', 'outputs/125.par', 'data/125.esr', 'outputs/125.dat', 2
+'params/145.par', 'outputs/145.par', 'data/145.esr', 'outputs/145.dat', 2
+'params/165.par', 'outputs/165.par', 'data/165.esr', 'outputs/165.dat', 2
+'params/180.par', 'outputs/180.par', 'data/180.esr', 'outputs/180.dat', 2
+end

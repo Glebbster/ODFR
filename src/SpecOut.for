@@ -17,7 +17,7 @@ c
         DOUBLE PRECISION fparms(NFPRM,MXSITE,MXSPC)
         COMMON /COMPARMS/ iparms,fparms
 c
-       character*30 programName,FileName,NamSpec,ParEPR,NamParODF
+       character(*) programName,FileName,NamSpec,ParEPR,NamParODF
         integer NptsExp
         double precision FieldExp,SpecExp
 	 common/iexp/NptsExp(MXSPC)
@@ -36,8 +36,11 @@ c   ######################################################################
 c   
        if (mpi_rank.ne.0) return
        OPEN ( UNIT=1,FILE=FileName)
-      WRITE(1,115)programName,NamSpec,ParEPR,NamParODF
- 115      Format(1x,A15,', ',A15,', ',A15,', ',A15)
+      WRITE(1,115)programName,
+     #    NamSpec(:max(15,len_trim(NamSpec))),
+     #    ParEPR(:max(15,len_trim(ParEPR))),
+     #    NamParODF(:max(15,len_trim(NamParODF)))
+ 115      Format(1x,A15,3(', ',A))
               write(1,117) minerr(info)
  117	 format('MINPACK returned: ', a32)
       WRITE(1,116) lossSseW,lossSseUn,lossRedW,lossRedUn

@@ -133,7 +133,16 @@ if(ODFR4_BUILD_MPI)
 endif()
 
 include(CTest)
+option(ODFR4_TEST_STABILITY "Enable the ten-job stability scenarios" OFF)
 if(BUILD_TESTING)
+  add_executable(cscg_completed_steps
+    tests/cscg/completed_steps.for
+    src/cscg.f src/cgltrimy.f src/cfs.f src/scmvm.f
+    src/zaxpy.f src/zaypx.f src/zdotu.f
+  )
+  odfr4_configure_target(cscg_completed_steps)
+  add_test(NAME cscg_completed_steps COMMAND cscg_completed_steps)
+
   add_executable(optimization_steps_probe
     "${ODFR4_SOURCE_DIR}/optimization_steps.for"
     "${ODFR4_SOURCE_DIR}/nl2sol_2015.f90"
@@ -150,6 +159,66 @@ if(BUILD_TESTING)
         "${CMAKE_CURRENT_BINARY_DIR}/tests/observer"
     )
     set_tests_properties(optimization_steps_observer PROPERTIES TIMEOUT 60)
+
+    function(odfr4_add_user_tests suffix mode)
+      set(scenarios batch output_paths long_paths empty_cg)
+      if(ODFR4_TEST_STABILITY)
+        list(APPEND scenarios series)
+      endif()
+      foreach(scenario IN LISTS scenarios)
+        set(test_name "user_${scenario}_${suffix}")
+        add_test(NAME "${test_name}"
+          COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_user_workflow.py"
+            "${scenario}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/smoke/input"
+            "${CMAKE_CURRENT_BINARY_DIR}/tests/user"
+            ${ARGN}
+        )
+        set_tests_properties("${test_name}" PROPERTIES
+          LABELS "user;regression;${mode}" TIMEOUT 900)
+        if(scenario STREQUAL "series")
+          set_property(TEST "${test_name}" APPEND PROPERTY LABELS stability)
+        endif()
+        if(mode STREQUAL "mpi")
+          set_tests_properties("${test_name}" PROPERTIES PROCESSORS 2)
+        endif()
+      endforeach()
+    endfunction()
+
+    if(ODFR4_BUILD_SERIAL)
+      odfr4_add_user_tests(serial serial "$<TARGET_FILE:ODFR4_3_serial>")
+    endif()
+    if(ODFR4_BUILD_MPI)
+      odfr4_add_user_tests(mpi_2 mpi
+        "${MPIEXEC_EXECUTABLE}" "${MPIEXEC_NUMPROC_FLAG}" 2
+        ${MPIEXEC_PREFLAGS} "$<TARGET_FILE:ODFR4_3_mpi>" ${MPIEXEC_POSTFLAGS})
+    endif()
+
+    if(ODFR4_BUILD_SERIAL)
+      add_test(NAME orientation_cache_serial
+        COMMAND "${Python3_EXECUTABLE}"
+          "${CMAKE_CURRENT_SOURCE_DIR}/tests/orientation_cache/check_cache.py"
+          "${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/smoke/input"
+          "$<TARGET_FILE:ODFR4_3_serial>"
+      )
+      set_tests_properties(orientation_cache_serial PROPERTIES
+        LABELS "regression;orientation_cache;serial" TIMEOUT 90
+      )
+    endif()
+
+    if(ODFR4_BUILD_MPI)
+      add_test(NAME orientation_cache_mpi_2
+        COMMAND "${Python3_EXECUTABLE}"
+          "${CMAKE_CURRENT_SOURCE_DIR}/tests/orientation_cache/check_cache.py"
+          "${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/smoke/input"
+          "${MPIEXEC_EXECUTABLE}" "${MPIEXEC_NUMPROC_FLAG}" 2
+          ${MPIEXEC_PREFLAGS} "$<TARGET_FILE:ODFR4_3_mpi>" ${MPIEXEC_POSTFLAGS}
+      )
+      set_tests_properties(orientation_cache_mpi_2 PROPERTIES
+        LABELS "regression;orientation_cache;mpi" PROCESSORS 2 TIMEOUT 90
+      )
+    endif()
   endif()
 
   if(ODFR4_BUILD_SERIAL)

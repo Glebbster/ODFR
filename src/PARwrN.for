@@ -2,7 +2,7 @@ C for ODFR 01/12/2014
 	SUBROUTINE  PARWrite(AME,jfile)
 c
           IMPLICIT DOUBLE PRECISION (A-H),DOUBLE PRECISION (O-Z)
-	character*30 ame
+	character(*) ame
 c    
       include 'dimnls.inc'
       include 'eprprm.inc'

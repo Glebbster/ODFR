@@ -4,7 +4,7 @@
 
 ODFR simulates and fits slow-motion EPR spectra of spin probes, especially nitroxide radicals, in partially oriented samples. It jointly fits spectra recorded at different sample angles to study molecular orientation distributions and rotational mobility, using MOMD and ODF models.
 
-This is a maintained continuation of [ODFR 4.3](https://sourceforge.net/projects/odfr/), originally developed by Andrey Kh. Vorobiev. Version **5.0.0** is based on the verified `Projects/main` source snapshot; [CHANGELOG.md](CHANGELOG.md) identifies the functional changes and their source files.
+This is a maintained continuation of [ODFR 4.3](https://sourceforge.net/projects/odfr/), originally developed by Andrey Kh. Vorobiev. Version **5.1.0** is based on the verified `Projects/main` source snapshot; [CHANGELOG.md](CHANGELOG.md) identifies the functional changes and their source files.
 
 [Installation](#installation) · [Manuals and descriptions](#manuals-and-descriptions) · [Licenses](#licenses)
 
@@ -12,30 +12,30 @@ This is a maintained continuation of [ODFR 4.3](https://sourceforge.net/projects
 
 ### Download and run on Windows x64
 
-1. Download and extract **ODFR-5.0.0-windows-x64.zip** from [Releases](https://github.com/Glebbster/ODFR/releases/tag/v5.0.0).
+1. Download and extract **ODFR-5.1.0-windows-x64.zip** from [Releases](https://github.com/Glebbster/ODFR/releases).
 2. `bin/ODFR5_serial.exe` needs no compiler, Python or MPI installation. The GNU runtime is linked statically.
 3. For `bin/ODFR5_mpi.exe`, install the x64 **Microsoft MPI runtime** (`msmpisetup.exe`) from [Microsoft](https://learn.microsoft.com/en-us/message-passing-interface/microsoft-mpi). The SDK is not needed to run this binary. Reopen the terminal after installation.
 4. Prepare a separate calculation directory containing `namODFR.nam` and the input files it names. Run from that directory, using the executable's full path:
 
 ```powershell
 cd C:\work\my-calculation
-& 'C:\apps\ODFR-5.0.0\bin\ODFR5_serial.exe'
+& 'C:\apps\ODFR-5.1.0\bin\ODFR5_serial.exe'
 # Or use 2 MPI processes:
-& 'C:\Program Files\Microsoft MPI\Bin\mpiexec.exe' -n 2 'C:\apps\ODFR-5.0.0\bin\ODFR5_mpi.exe'
+& 'C:\Program Files\Microsoft MPI\Bin\mpiexec.exe' -n 2 'C:\apps\ODFR-5.1.0\bin\ODFR5_mpi.exe'
 ```
 
 Adjust both paths to your extraction/calculation directories. Each simultaneous calculation needs its own working directory: `temp*`, `history` and optimization recordings use shared names. Choose a process count suited to the available cores and `NORT`; this MPI implementation does not require divisibility between the process count and `NORT`.
 
 ### Build from source
 
-Required: **CMake 3.20+, GNU Fortran and a build tool**. Python 3 enables the optimizer observer test; the program itself does not need Python. MPI is optional. Serial builds use included MPI stubs and need no MPI installation or external BLAS/LAPACK.
+Required: **CMake 3.20+, GNU Fortran and a build tool**. Python 3 enables the workflow, cache and optimizer observer tests; the program itself does not need Python. MPI is optional. Serial builds use included MPI stubs and need no MPI installation or external BLAS/LAPACK.
 
-Download **ODFR-5.0.0-source.zip** and extract it, or install Git and run:
+Download **ODFR-5.1.0-source.zip** and extract it, or install Git and run:
 
 ```text
 git clone https://github.com/Glebbster/ODFR.git
 cd ODFR
-git checkout v5.0.0
+git checkout v5.1.0
 ```
 
 Run the following commands from the directory containing `CMakeLists.txt`.
@@ -131,7 +131,8 @@ Package references: [MSYS2 CMake](https://www.msys2.org/docs/cmake/), [MSYS2 MPI
 - [Architecture](docs/ARCHITECTURE.md).
 - [Original manual](docs/ODF_manual4_3.pdf): the supplied ODFR 4.3 PDF, unchanged. Its old executable names and MPI implementation notes must be read alongside this README and the changelog.
 - [ODFR_Tests](examples/ODFR_Tests): ten example datasets, including their supplied historical outputs. Copy a case to a separate directory before running it. These are examples, not newly certified reference results.
-- [Build tests](tests/README.md): weighted smoke and HGO regression tests, serial and two-process MPI variants, optimizer observer checks. Build **all targets** before running all CTest tests; Python must be found for the observer test.
+- [Manual spectrum examples](tests/manual-experiments/README.md) cover ISO FL, LC FL and LC P using saved parameters. Run them from separate writable copies.
+- [Build tests](tests/README.md): weighted smoke and HGO regression tests, batch execution, long paths, orientation caching, CSCG and optimizer recording. Includes serial and two-process MPI variants. Build **all targets** before running all CTest tests; Use Python 3 to enable all test scenarios.
 - [Weights and optimization steps](docs/README.md): exact PAR lines and recording settings. [Weights.py](tools/README.md) creates a weight file interactively.
 
 To examine modeling steps in detail, enable recording in the same terminal before running ODFR. It is off by default.

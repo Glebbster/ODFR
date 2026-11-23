@@ -2,6 +2,14 @@
 
 [Русский](CHANGELOG_RU.md)
 
+## 5.1.0
+
+- Reuse eligible local orientation spectra within a single model evaluation, before applying macroscopic ODF weights. This reduces repeated work in one-shot calculations and NL2SOL. MINPACK retains its existing explicit Jacobian calculation. See [cache modes](docs/ORIENTATION_CACHE.md).
+- Use only completed CSCG steps in the continued fraction. Handle one completed step directly and report a failure before writing spectra if no step completed. This removes a dependence on coefficients left by earlier jobs and can change the numerical trajectory of a fit. See [CSCG checks](docs/CSCG.md).
+- Read and write long quoted paths in `namODFR.nam` across EPR parameters, spectra and ODF files. The parser allows up to 4096 characters per path. The operating system and filesystem also impose their own limits.
+- Extend the automated serial and MPI regressions for multi-job execution, output paths, the orientation cache and CSCG. The optional `ODFR4_TEST_STABILITY` setting adds ten-job checks.
+- Retain the public `ODFR5_serial` and `ODFR5_mpi` executable names and opt-in NL2SOL step recording (`ODFR_OPTIMIZATION_STEPS=1`).
+
 ## 5.0.0 — 2026-10-13
 
 First standalone release of the ODFR version maintained in `Glebbster/Projects/main`, imported from `13f0f3f149e401885ac5fed49c61f4c48cd41bf7`. The changes below are cumulative relative to the official **2018 ODFR 4.3 serial/MPI source archives**, not all newly implemented for this release. The internal Projects tag `odfr4-v4.3.0` already contained many of them.

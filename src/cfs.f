@@ -39,11 +39,12 @@ c     Code modified from CFVD program of D.J. Schneider,
 c
 c**********************************************************************
 c
-      subroutine cfs(a,b,n,z0,dz,nz,w,ideriv,phs,val)
+      subroutine cfs(a,b,n,z0,dz,nz,w,ideriv,phs,val,complete)
 c
       implicit none
 c
       integer ideriv,n,nz
+      logical complete
       double precision w,z,z0,dz,phs,val(nz)
       double complex a(n),b(n),ephs
 c
@@ -58,6 +59,7 @@ c
 c
 c######################################################################
 c
+      complete=.false.
       if (phs .ne. phs) then
          write(*,*) 'CFS error: phase is NaN'
          return
@@ -67,11 +69,27 @@ c
 c    -----------------------------------------------------------------
 c     Compute 0th derivative of continued fraction with respect to z
 c    -----------------------------------------------------------------
-      if (n .lt. 2) then
-         write(*,*) 'CFS error: n must be >=2'
+      if (n .lt. 1) then
+         write(*,*) 'CFS error: no completed CG steps'
          return
       endif    
-      if (ideriv.eq.0) then
+      if (n.eq.1) then
+         z=z0-dz
+         do iz=1,nz
+            z=z+dz
+            x=dcmplx(w,z)
+            if (cdabs(a(1)+x).lt.1.0D-300) then
+               write(*,*) 'CFS warning: near singular denominator'
+               return
+            endif
+            s=unity/(a(1)+x)
+            if (ideriv.eq.0) then
+               val(iz)=dreal(ephs*s)
+            else
+               val(iz)=dreal(ephs*ci*s*s)
+            endif
+         end do
+      else if (ideriv.eq.0) then
          z=z0-dz
          do iz=1,nz
             z=z+dz
@@ -128,5 +146,6 @@ c    -----------------------------------------------------------
      #    val(ictr)=0.5D0*(val(ictr+1)+val(ictr-1) ) 
       end if
 c
+      complete=.true.
       return
       end
